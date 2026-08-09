@@ -90,18 +90,18 @@ export default function Header() {
 
   return (
     <>
-      <div className="w-full bg-[#6E7F51] py-[2px] text-white text-sm font-medium fixed top-0 left-0 z-[9999] overflow-hidden whitespace-nowrap">
+      <div className="w-full bg-[#6E7F51] py-0.5 text-white text-sm font-medium fixed top-0 left-0 z-9999 overflow-hidden whitespace-nowrap">
         <div className="inline-block whitespace-nowrap animate-marquee">
           {[...ANNOUNCEMENTS, ...ANNOUNCEMENTS, ...ANNOUNCEMENTS].map((text, i) => (
             <span key={i} className="inline-flex items-center gap-2 mr-6 align-middle">
-              <FaHandPointRight className="text-white h-[15px] w-[15px] flex-shrink-0" />
+              <FaHandPointRight className="text-white h-3.75 w-3.75 shrink-0" />
               <span>{text}</span>
             </span>
           ))}
         </div>
       </div>
 
-      <header className="w-full shadow-md fixed top-[28px] left-0 bg-white z-50">
+      <header className="w-full shadow-md fixed top-7 left-0 bg-white z-50">
         <div className="w-full flex items-center justify-between px-4 py-2 md:px-10">
           <Link href="/">
             <img src="/mainlogo.png" alt="Herbsvedic Logo" className="h-12 w-auto" />
@@ -123,7 +123,7 @@ export default function Header() {
               </button>
 
               {isSearchOpen && (
-                <div className="absolute right-0 -top-1 z-[1000] bg-white shadow-lg border rounded-full w-64 px-3 py-1.5 flex items-center">
+                <div className="absolute right-0 -top-1 z-1000 bg-white shadow-lg border rounded-full w-64 px-3 py-1.5 flex items-center">
                   <form onSubmit={handleSearchSubmit} className="flex items-center w-full">
                     <input
                       type="text"
@@ -141,7 +141,7 @@ export default function Header() {
               )}
 
               {isSearchOpen && searchQuery.trim() && (
-                <div className="absolute right-0 top-[48px] w-72 bg-white shadow-lg border rounded-lg max-h-80 overflow-y-auto z-[999]">
+                <div className="absolute right-0 top-12 w-72 bg-white shadow-lg border rounded-lg max-h-80 overflow-y-auto z-999">
                   {isSearchLoading ? (
                     <div className="p-4 text-center text-gray-500">Searching...</div>
                   ) : searchResults.length === 0 ? (
