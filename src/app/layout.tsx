@@ -37,7 +37,7 @@ export default function RootLayout({
           <ToastContainer position="top-right" autoClose={3000} />
           <Header />
           <CartSidebar />
-          <main className="pt-29.25 md:pt-12.5 lg:pt-27.5">
+          <main className="pt-24">
             {children}
           </main>
           <Footer />

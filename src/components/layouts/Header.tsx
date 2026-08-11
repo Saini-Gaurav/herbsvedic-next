@@ -88,7 +88,7 @@ export default function Header() {
 
   return (
     <>
-      <div className="w-full bg-ink py-1.5 text-sand text-xs font-body tracking-wide fixed top-0 left-0 z-9999 overflow-hidden whitespace-nowrap">
+      <div className="w-full bg-ink h-8 flex items-center text-sand text-xs font-body tracking-wide fixed top-0 left-0 z-9999 overflow-hidden whitespace-nowrap">
         <div className="inline-block whitespace-nowrap animate-marquee">
           {[...ANNOUNCEMENTS, ...ANNOUNCEMENTS, ...ANNOUNCEMENTS].map(
             (text, i) => (
@@ -104,8 +104,8 @@ export default function Header() {
         </div>
       </div>
 
-      <header className="w-full fixed top-7.5 left-0 bg-sand/95 backdrop-blur-sm border-b border-bark/10 z-50">
-        <div className="w-full flex items-center justify-between px-4 py-3 md:px-10">
+      <header className="w-full fixed top-8 left-0 bg-sand/95 backdrop-blur-sm border-b border-bark/10 z-50">
+        <div className="h-16 w-full flex items-center justify-between px-4 py-3 md:px-10">
           <Link
             href="/"
             className="font-display text-2xl text-canopy tracking-tight"
@@ -268,90 +268,92 @@ export default function Header() {
               {isMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
             </button>
 
-            {isMenuOpen && (
-              <div
-                ref={menuRef}
-                className="absolute top-full right-0 mt-2 w-64 bg-sand shadow-xl rounded-bl-2xl z-50 p-5 border border-bark/10"
-              >
-                <ul className="flex flex-col space-y-4 font-body text-sm">
-                  <li>
-                    <Link
-                      href="/"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="text-bark"
+            <div
+              ref={menuRef}
+              className={`absolute top-full right-0 mt-0 w-64 bg-sand shadow-xl rounded-bl-2xl z-50 p-5 border border-bark/10 transition-all duration-300 origin-top-right ${
+                isMenuOpen
+                  ? "opacity-100 scale-100 pointer-events-auto"
+                  : "opacity-0 scale-95 pointer-events-none"
+              }`}
+            >
+              <ul className="flex flex-col space-y-4 font-body text-sm">
+                <li>
+                  <Link
+                    href="/"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-bark"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/shop"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-bark"
+                  >
+                    Shop
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/consult"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-bark"
+                  >
+                    Consult
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/about-us"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-bark"
+                  >
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/blog"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-bark"
+                  >
+                    Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/contact"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-bark"
+                  >
+                    Contact Us
+                  </Link>
+                </li>
+                <li>
+                  {user ? (
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="border border-canopy text-canopy px-4 py-1.5 rounded-full text-xs uppercase tracking-wide"
                     >
-                      Home
-                    </Link>
-                  </li>
-                  <li>
+                      Logout
+                    </button>
+                  ) : (
                     <Link
-                      href="/shop"
+                      href="/login"
                       onClick={() => setIsMenuOpen(false)}
-                      className="text-bark"
+                      className="border border-canopy text-canopy px-4 py-1.5 rounded-full text-xs uppercase tracking-wide inline-block"
                     >
-                      Shop
+                      Login
                     </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/consult"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="text-bark"
-                    >
-                      Consult
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/about-us"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="text-bark"
-                    >
-                      About Us
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/blog"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="text-bark"
-                    >
-                      Blog
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/contact"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="text-bark"
-                    >
-                      Contact Us
-                    </Link>
-                  </li>
-                  <li>
-                    {user ? (
-                      <button
-                        onClick={() => {
-                          logout();
-                          setIsMenuOpen(false);
-                        }}
-                        className="border border-canopy text-canopy px-4 py-1.5 rounded-full text-xs uppercase tracking-wide"
-                      >
-                        Logout
-                      </button>
-                    ) : (
-                      <Link
-                        href="/login"
-                        onClick={() => setIsMenuOpen(false)}
-                        className="border border-canopy text-canopy px-4 py-1.5 rounded-full text-xs uppercase tracking-wide inline-block"
-                      >
-                        Login
-                      </Link>
-                    )}
-                  </li>
-                </ul>
-              </div>
-            )}
+                  )}
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </header>

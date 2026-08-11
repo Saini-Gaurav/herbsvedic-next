@@ -32,8 +32,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function checkSession() {
       try {
-        const data = await apiFetch<{ data: User }>(`${AUTH_API}/auth/me`);
-        setUser(data.data);
+        const data = await apiFetch<{ user: User }>(`${AUTH_API}/auth/me`);
+        setUser(data.user);
       } catch {
         // A 401 here just means "not logged in" - not a real error to show anyone, so it's caught and silently treated as "no user."
         setUser(null);
@@ -50,8 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify({ email, password }),
     });
     // The login call itself doesn't need to return the user - we already know how to ask for it (/auth/me), so reuse that instead of duplicating "what does a logged-in user look like" in two places.
-    const data = await apiFetch<{ data: User }>(`${AUTH_API}/auth/me`);
-    setUser(data.data);
+    const data = await apiFetch<{ user: User }>(`${AUTH_API}/auth/me`);
+    setUser(data.user);
   }
 
   async function register(name: string, email: string, password: string, phone: string) {
@@ -59,8 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       body: JSON.stringify({ name, email, password, phone }),
     });
-    const data = await apiFetch<{ data: User }>(`${AUTH_API}/auth/me`);
-    setUser(data.data);
+    const data = await apiFetch<{ user: User }>(`${AUTH_API}/auth/me`);
+    setUser(data.user);
   }
 
   async function logout() {
