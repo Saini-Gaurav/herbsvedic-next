@@ -1,32 +1,45 @@
 import { getProducts, getCategories } from "@/lib/api/products";
 import ProductCard from "@/components/products/ProductCard";
-import CategoryFilter from "@/components/products/CategoryFilter";
-import Pagination from "@/components/products/Pagination";
+import CategoryFilter from "./_components/CategoryFilter";
+import PriceFilter from "./_components/PriceFilter";
+import SortDropdown from "./_components/SortDropdown";
+import Pagination from "./_components/Pagination";
+import { ProductSortBy } from "@/types/product";
 
-// Next.js 15+ passes searchParams into a Server Component page as a Promise (so the framework can start work that doesn't depend on the URL before the URL itself is fully known) - it has to be awaited before reading anything off it.
 interface ShopPageProps {
-  searchParams: Promise<{ categoryId?: string; search?: string; page?: string }>;
+  searchParams: Promise<{
+    categoryId?: string;
+    search?: string;
+    page?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    sortBy?: string;
+  }>;
 }
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const params = await searchParams;
   const page = params.page ? Number(params.page) : 1;
 
-  // Both requests fire at the same time - they don't depend on each
-  // other's results, so there's no reason to make the shopper wait for
-  // them one after another.
   const [{ products, pagination }, categories] = await Promise.all([
-    getProducts({ categoryId: params.categoryId, search: params.search, page }),
+    getProducts({
+      categoryId: params.categoryId,
+      search: params.search,
+      page,
+      minPrice: params.minPrice ? Number(params.minPrice) : undefined,
+      maxPrice: params.maxPrice ? Number(params.maxPrice) : undefined,
+      sortBy: params.sortBy as ProductSortBy | undefined,
+    }),
     getCategories(),
   ]);
 
-  // Builds a /shop?... link for a given page number, carrying forward
-  // whatever category/search filters are currently active - so paging
-  // through page 2 of a filtered search doesn't silently drop the filter.
   function buildHref(targetPage: number): string {
     const query = new URLSearchParams();
     if (params.categoryId) query.set("categoryId", params.categoryId);
     if (params.search) query.set("search", params.search);
+    if (params.minPrice) query.set("minPrice", params.minPrice);
+    if (params.maxPrice) query.set("maxPrice", params.maxPrice);
+    if (params.sortBy) query.set("sortBy", params.sortBy);
     if (targetPage > 1) query.set("page", String(targetPage));
     const qs = query.toString();
     return qs ? `/shop?${qs}` : "/shop";
@@ -45,23 +58,42 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
         )}
       </div>
 
-      <div className="mb-8">
-        <CategoryFilter categories={categories} />
+      <div className="flex flex-col lg:flex-row gap-8">
+        <aside className="w-full lg:w-64 shrink-0 space-y-8">
+          <div>
+            <h2 className="font-body font-semibold text-sm uppercase tracking-wide text-bark/70 mb-3">
+              Category
+            </h2>
+            <CategoryFilter categories={categories} />
+          </div>
+          <div>
+            <h2 className="font-body font-semibold text-sm uppercase tracking-wide text-bark/70 mb-3">
+              Price
+            </h2>
+            <PriceFilter />
+          </div>
+        </aside>
+
+        <main className="flex-1">
+          <div className="flex justify-end mb-6">
+            <SortDropdown />
+          </div>
+
+          {products.length === 0 ? (
+            <div className="text-center py-24 text-bark/50 font-body">
+              No products found. Try a different filter or search.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+
+          <Pagination pagination={pagination} buildHref={buildHref} />
+        </main>
       </div>
-
-      {products.length === 0 ? (
-        <div className="text-center py-24 text-bark/50 font-body">
-          No products found. Try a different filter or search.
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      )}
-
-      <Pagination pagination={pagination} buildHref={buildHref} />
     </div>
   );
 }

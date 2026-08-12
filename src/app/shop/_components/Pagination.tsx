@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { PaginationInfo } from "@/types/product";
 
-// No "use client" here on purpose - this only needs <Link>s pointing at different query strings, and plain navigation doesn't need any useState/event-handler logic that would require shipping this component's JavaScript down to the browser at all.
 export default function Pagination({
   pagination,
   buildHref,

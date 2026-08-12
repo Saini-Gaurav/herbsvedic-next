@@ -35,9 +35,14 @@ export interface PaginationInfo {
   totalPages: number;
 }
 
+export type ProductSortBy = "newest" | "price_asc" | "price_desc" | "rating";
+
 export interface ProductListParams {
   categoryId?: string;
   search?: string;
   page?: number;
   isFeatured?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: ProductSortBy;
 }

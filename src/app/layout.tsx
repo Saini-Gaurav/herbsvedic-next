@@ -32,7 +32,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${fraunces.variable} ${workSans.variable} font-body bg-sand text-bark`}>
+      <body className={"font-body bg-sand text-bark"}>
         <Providers>
           <ToastContainer position="top-right" autoClose={3000} />
           <Header />

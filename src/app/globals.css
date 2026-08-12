@@ -8,8 +8,17 @@
   --color-bark: #3D2B1F;
   --color-turmeric: #C89B3C;
 
-  --font-display: var(--font-fraunces), serif;
-  --font-body: var(--font-work-sans), sans-serif;
+  /* System font stacks instead of next/font/google - these fonts are
+     already installed on the visitor's device, so there's zero network
+     request involved (unlike next/font/google, which downloads the
+     actual font FILES the first time your server builds). Georgia is a
+     widely-installed elegant serif standing in for Fraunces; the
+     sans-serif stack mirrors what macOS/Windows/Android/iOS each
+     already ship as their default system UI font, standing in for Work
+     Sans. Swap these for next/font/local + real downloaded .woff2 files
+     later if you want the exact original typography. */
+  --font-display: Georgia, "Iowan Old Style", "Palatino Linotype", "URW Palladio L", P052, serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {

@@ -2,7 +2,6 @@ import { Product, Category, PaginationInfo, ProductListParams } from "@/types/pr
 
 const PRODUCT_API = process.env.NEXT_PUBLIC_PRODUCT_API_URL;
 
-// Unlike apiClient.ts, these functions do NOT need credentials: "include" - product listing/detail/category routes are all public (no requireAuth in product-service's routes), so there's no cookie to send in the first place. This file is meant to be called from Server Components, where fetch() is Next.js's own extended version with built-in caching support (the `next: {...}` option below), not the browser's fetch.
 export async function getProducts(
   params: ProductListParams = {}
 ): Promise<{ products: Product[]; pagination: PaginationInfo }> {
@@ -13,9 +12,11 @@ export async function getProducts(
   if (params.isFeatured !== undefined) {
     query.set("isFeatured", String(params.isFeatured));
   }
+  if (params.minPrice !== undefined) query.set("minPrice", String(params.minPrice));
+  if (params.maxPrice !== undefined) query.set("maxPrice", String(params.maxPrice));
+  if (params.sortBy) query.set("sortBy", params.sortBy);
 
   const res = await fetch(`${PRODUCT_API}/products?${query.toString()}`, {
-    // Cache this response for up to 60 seconds instead of hitting the database on every single visitor. See the explanation above for the trade-off this involves.
     next: { revalidate: 60 },
   });
 
@@ -28,7 +29,6 @@ export async function getProducts(
 }
 
 export async function getCategories(): Promise<Category[]> {
-  // Categories change far less often than products (an admin adding a new category is rare), so a longer cache window is safe here.
   const res = await fetch(`${PRODUCT_API}/categories`, {
     next: { revalidate: 300 },
   });

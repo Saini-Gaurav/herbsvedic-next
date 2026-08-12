@@ -9,7 +9,6 @@ export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
 
   async function handleAddToCart(e: React.MouseEvent) {
-    // The whole card is a <Link> to the product page - without this, clicking "Add to cart" would ALSO navigate away, since the button sits inside that link.
     e.preventDefault();
     e.stopPropagation();
 

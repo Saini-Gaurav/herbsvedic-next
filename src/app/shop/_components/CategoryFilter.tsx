@@ -10,18 +10,13 @@ export default function CategoryFilter({ categories }: { categories: Category[] 
   const activeCategoryId = searchParams.get("categoryId") ?? "";
 
   function selectCategory(categoryId: string) {
-    // Start from the CURRENT query string so an active search term isn't wiped out just because a category was also clicked.
     const params = new URLSearchParams(searchParams.toString());
-
     if (categoryId) {
       params.set("categoryId", categoryId);
     } else {
       params.delete("categoryId");
     }
-
-    // Changing a filter always jumps back to page 1 - staying on "page 3" of a now much shorter filtered list would likely show nothing at all, which looks like a bug even though it isn't one.
     params.delete("page");
-
     router.push(`${pathname}?${params.toString()}`);
   }
 
