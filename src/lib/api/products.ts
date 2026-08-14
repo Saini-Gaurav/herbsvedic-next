@@ -15,6 +15,7 @@ export async function getProducts(
   if (params.minPrice !== undefined) query.set("minPrice", String(params.minPrice));
   if (params.maxPrice !== undefined) query.set("maxPrice", String(params.maxPrice));
   if (params.sortBy) query.set("sortBy", params.sortBy);
+  if (params.limit) query.set("limit", String(params.limit)); 
 
   const res = await fetch(`${PRODUCT_API}/products?${query.toString()}`, {
     next: { revalidate: 60 },

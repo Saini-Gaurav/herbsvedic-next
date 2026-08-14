@@ -45,4 +45,5 @@ export interface ProductListParams {
   minPrice?: number;
   maxPrice?: number;
   sortBy?: ProductSortBy;
+  limit?: number; 
 }
