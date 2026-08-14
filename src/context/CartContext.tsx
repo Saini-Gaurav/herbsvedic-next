@@ -6,14 +6,14 @@ import { useAuth } from "./AuthContext";
 
 const CART_API = process.env.NEXT_PUBLIC_CART_API_URL;
 
-interface CartItem {
+export interface CartItem {
   productId: string;
   quantity: number;
   product: { id: string; name: string; price: number; image: string; countInStock: number } | null;
   lineTotal: number;
 }
 
-interface Cart {
+export interface Cart {
   items: CartItem[];
   itemCount: number;
   subtotal: number;
@@ -28,6 +28,7 @@ interface CartContextValue {
   addToCart: (productId: string, quantity?: number) => Promise<void>;
   updateQuantity: (productId: string, quantity: number) => Promise<void>;
   removeFromCart: (productId: string) => Promise<void>;
+  clearCart: () => Promise<void>
 }
 
 const emptyCart: Cart = { items: [], itemCount: 0, subtotal: 0 };
@@ -91,9 +92,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCart(data.cart);
   }
 
+  async function clearCart() {
+  await apiFetch(`${CART_API}/cart`, { method: "DELETE" });
+  setCart(emptyCart);
+}
+
   return (
     <CartContext.Provider
-      value={{ cart, isLoading, isCartOpen, openCart, closeCart, addToCart, updateQuantity, removeFromCart }}
+      value={{ cart, isLoading, isCartOpen, openCart, closeCart, addToCart, updateQuantity, removeFromCart, clearCart }}
     >
       {children}
     </CartContext.Provider>
