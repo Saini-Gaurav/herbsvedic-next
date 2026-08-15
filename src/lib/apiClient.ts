@@ -1,4 +1,7 @@
 // A thin wrapper around fetch that ALWAYS sends cookies, and always throws a real Error (with the backend's message) on a failed request, instead of quietly returning a "not ok" response that's easy to forget to check.
+
+const AUTH_API = process.env.NEXT_PUBLIC_AUTH_API_URL;
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -9,9 +12,27 @@ export class ApiError extends Error {
   }
 }
 
+let refreshPromise: Promise<boolean> | null = null;
+
+async function refreshAccessToken(): Promise<boolean> {
+  if (!refreshPromise) {
+    refreshPromise = fetch(`${AUTH_API}/auth/refresh`, {
+      method: "POST",
+      credentials: "include",
+    })
+      .then((res) => res.ok)
+      .catch(() => false)
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
+}
+
 export async function apiFetch<T>(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  isRetry: boolean = false
 ): Promise<T> {
   const response = await fetch(url, {
     ...options,
@@ -23,6 +44,14 @@ export async function apiFetch<T>(
     },
   });
 
+  if (response.status === 401 && !isRetry && !url.includes("/auth/refresh")) {
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      return apiFetch<T>(url, options, true);
+    }
+    throw new ApiError("Session expired", 401);
+  }
+  
   // 204 No Content (e.g. a successful DELETE) has no body to parse - trying to call response.json() on an empty body throws its own confusing error, so this is handled as its own case.
   if (response.status === 204) {
     return undefined as T;

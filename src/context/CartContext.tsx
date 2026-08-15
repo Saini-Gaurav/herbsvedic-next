@@ -28,7 +28,7 @@ interface CartContextValue {
   addToCart: (productId: string, quantity?: number) => Promise<void>;
   updateQuantity: (productId: string, quantity: number) => Promise<void>;
   removeFromCart: (productId: string) => Promise<void>;
-  clearCart: () => Promise<void>
+  // clearCart: () => Promise<void> 
 }
 
 const emptyCart: Cart = { items: [], itemCount: 0, subtotal: 0 };
@@ -99,7 +99,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   return (
     <CartContext.Provider
-      value={{ cart, isLoading, isCartOpen, openCart, closeCart, addToCart, updateQuantity, removeFromCart, clearCart }}
+      value={{ cart, isLoading, isCartOpen, openCart, closeCart, addToCart, updateQuantity, removeFromCart, }}
     >
       {children}
     </CartContext.Provider>
