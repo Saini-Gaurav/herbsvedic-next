@@ -139,39 +139,52 @@ export default function Header() {
               <button
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="Open search"
-                className="text-bark/70 hover:text-bark transition"
+                className="text-bark/70 hover:text-bark transition relative z-10"
               >
                 <FiSearch size={20} />
               </button>
 
-              {isSearchOpen && (
-                <div className="absolute right-0 -top-1 z-1000 bg-sand shadow-lg border border-bark/10 rounded-full w-64 px-4 py-2 flex items-center">
-                  <form
-                    onSubmit={handleSearchSubmit}
-                    className="flex items-center w-full"
+              {/* The pill - anchored at the icon's own vertical center, grows
+      LEFTWARD from the icon since it's right-0 and its width animates
+      from 0 up to a cap. Staying in the same row as the nav links on
+      purpose, per your call - w-56 keeps it narrow enough that it
+      shouldn't reach "Contact Us" on most screen widths, but worth
+      checking your narrowest md: breakpoint and shrinking this further
+      if it still touches. */}
+              <div
+                className={`absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-sand shadow-lg border border-bark/10 rounded-full flex items-center overflow-hidden transition-all duration-300 ease-out ${
+                  isSearchOpen
+                    ? "w-56 px-4 py-2 opacity-100"
+                    : "w-0 px-0 py-2 opacity-0 pointer-events-none"
+                }`}
+              >
+                <form
+                  onSubmit={handleSearchSubmit}
+                  className="flex items-center w-full"
+                >
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    className="flex-1 text-sm font-body focus:outline-none bg-transparent placeholder:text-bark/40 min-w-0"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsSearchOpen(false)}
+                    aria-label="Close search"
+                    className="text-bark/50 shrink-0 ml-1"
                   >
-                    <input
-                      type="text"
-                      autoFocus
-                      placeholder="Search products..."
-                      className="flex-1 text-sm font-body focus:outline-none bg-transparent placeholder:text-bark/40"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setIsSearchOpen(false)}
-                      aria-label="Close search"
-                      className="text-bark/50"
-                    >
-                      <FiX size={16} />
-                    </button>
-                  </form>
-                </div>
-              )}
+                    <FiX size={16} />
+                  </button>
+                </form>
+              </div>
 
+              {/* Results dropdown - appears BELOW the pill only (top-full relative
+      to this same small wrapper), not below the whole header. Anchored
+      right-0 so it lines up under the pill's right edge. */}
               {isSearchOpen && searchQuery.trim() && (
-                <div className="absolute right-0 top-13 w-72 bg-sand shadow-xl border border-bark/10 rounded-xl max-h-80 overflow-y-auto z-999">
+                <div className="absolute right-0 top-full mt-2 w-72 bg-sand shadow-xl border border-bark/10 rounded-xl max-h-80 overflow-y-auto z-999">
                   {isSearchLoading ? (
                     <div className="p-4 text-center text-bark/50 font-body text-sm">
                       Searching...
