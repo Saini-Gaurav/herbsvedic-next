@@ -20,6 +20,7 @@ export default function PaymentStep({ order }: { order: Order }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [scriptLoaded, setScriptLoaded] = useState(false);
   // const { clearCart } = useCart(); 
+  const { clearCartLocally } = useCart();
   const router = useRouter();
 
   async function handlePayNow() {
@@ -51,6 +52,7 @@ export default function PaymentStep({ order }: { order: Order }) {
               razorpaySignature: response.razorpay_signature,
             });
             // await clearCart();   // the order now owns this list of items - cart's job here is done
+            clearCartLocally();
             router.push(`/order-confirmation/${order.id}`);
           } catch (err) {
             const message = err instanceof ApiError ? err.message : "Payment verification failed";

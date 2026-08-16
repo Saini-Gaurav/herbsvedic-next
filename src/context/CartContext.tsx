@@ -29,6 +29,7 @@ interface CartContextValue {
   updateQuantity: (productId: string, quantity: number) => Promise<void>;
   removeFromCart: (productId: string) => Promise<void>;
   // clearCart: () => Promise<void> 
+  clearCartLocally: () => void;
 }
 
 const emptyCart: Cart = { items: [], itemCount: 0, subtotal: 0 };
@@ -45,9 +46,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const closeCart = () => setIsCartOpen(false);
 
   const fetchCart = useCallback(async () => {
-    // No user, no cart to fetch - cart-service's routes all require
-    // requireAuth, so calling this while logged out would just be a
-    // guaranteed 401. Skip the wasted network call entirely.
+    // No user, no cart to fetch - cart-service's routes all require requireAuth, so calling this while logged out would just be a guaranteed 401. Skip the wasted network call entirely.
     if (!user) {
       setCart(emptyCart);
       setIsLoading(false);
@@ -97,9 +96,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   setCart(emptyCart);
 }
 
+  // Approach 1: optimistic local clear. This does NOT call the backend at all - by the time this runs, the order already succeeded, so we already know with certainty the cart is now empty. This just stops the UI from waiting to be told something it already knows. The real backend clear still happens completely separately, via cart-service's Kafka consumer - this is purely about making THIS tab feel instant, nothing more.
+  function clearCartLocally() {
+    setCart(emptyCart);
+  }
+
   return (
     <CartContext.Provider
-      value={{ cart, isLoading, isCartOpen, openCart, closeCart, addToCart, updateQuantity, removeFromCart, }}
+      value={{ cart, isLoading, isCartOpen, openCart, closeCart, addToCart, updateQuantity, removeFromCart, clearCartLocally}}
     >
       {children}
     </CartContext.Provider>
