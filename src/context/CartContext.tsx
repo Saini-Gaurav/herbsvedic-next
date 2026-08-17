@@ -1,10 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from "react";
 import { apiFetch } from "@/lib/apiClient";
 import { useAuth } from "./AuthContext";
 
 const CART_API = process.env.NEXT_PUBLIC_CART_API_URL;
+
+// One shared "radio station" name every tab tunes into. Any tab that creates a BroadcastChannel with this exact same name can hear every other tab's messages on it - this string is the only thing linking them.
+const CART_SYNC_CHANNEL = "herbsvedic-cart-sync";
 
 export interface CartItem {
   productId: string;
@@ -44,6 +47,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
+  // Holds this tab's own connection to the shared channel. useRef, not useState - this value should never trigger a re-render on its own, it's just a handle we reach for when broadcasting.
+  const channelRef = useRef<BroadcastChannel | null>(null);
+
+  // Opens the channel once, when this tab first loads, and listens for messages arriving from OTHER tabs. This is the actual "push" half of the sync - a sibling tab's change lands here automatically, with no polling and no request from this tab at all.
+  useEffect(() => {
+    const channel = new BroadcastChannel(CART_SYNC_CHANNEL);
+    channelRef.current = channel;
+
+    channel.onmessage = (event: MessageEvent<{ type: "CART_UPDATED"; cart: Cart }>) => {
+      if (event.data.type === "CART_UPDATED") {
+        setCart(event.data.cart);
+      }
+    };
+
+    return () => channel.close();
+  }, []);
+
+  // The "send" half - call this any time THIS tab changes the cart, right after updating its own local state, so every sibling tab gets the same update pushed to it immediately.
+  function broadcastCartUpdate(updatedCart: Cart) {
+    channelRef.current?.postMessage({ type: "CART_UPDATED", cart: updatedCart });
+  }
 
   const fetchCart = useCallback(async () => {
     // No user, no cart to fetch - cart-service's routes all require requireAuth, so calling this while logged out would just be a guaranteed 401. Skip the wasted network call entirely.
@@ -73,6 +97,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify({ productId, quantity }),
     });
     setCart(data.cart);
+    broadcastCartUpdate(data.cart);
     openCart(); // matches the old app's behavior: adding an item auto-opens the sidebar
   }
 
@@ -82,6 +107,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify({ quantity }),
     });
     setCart(data.cart);
+    broadcastCartUpdate(data.cart);
   }
 
   async function removeFromCart(productId: string) {
@@ -89,6 +115,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       method: "DELETE",
     });
     setCart(data.cart);
+    broadcastCartUpdate(data.cart);
   }
 
   async function clearCart() {
@@ -99,6 +126,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Approach 1: optimistic local clear. This does NOT call the backend at all - by the time this runs, the order already succeeded, so we already know with certainty the cart is now empty. This just stops the UI from waiting to be told something it already knows. The real backend clear still happens completely separately, via cart-service's Kafka consumer - this is purely about making THIS tab feel instant, nothing more.
   function clearCartLocally() {
     setCart(emptyCart);
+    broadcastCartUpdate(emptyCart);
   }
 
   return (
