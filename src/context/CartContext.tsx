@@ -7,7 +7,7 @@ import { useAuth } from "./AuthContext";
 const CART_API = process.env.NEXT_PUBLIC_CART_API_URL;
 
 // One shared "radio station" name every tab tunes into. Any tab that creates a BroadcastChannel with this exact same name can hear every other tab's messages on it - this string is the only thing linking them.
-const CART_SYNC_CHANNEL = "herbsvedic-cart-sync";
+// const CART_SYNC_CHANNEL = "herbsvedic-cart-sync"; 
 
 export interface CartItem {
   productId: string;
@@ -51,18 +51,43 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const channelRef = useRef<BroadcastChannel | null>(null);
 
   // Opens the channel once, when this tab first loads, and listens for messages arriving from OTHER tabs. This is the actual "push" half of the sync - a sibling tab's change lands here automatically, with no polling and no request from this tab at all.
+  // useEffect(() => {
+  //   const channel = new BroadcastChannel(CART_SYNC_CHANNEL);
+  //   channelRef.current = channel;
+
+  //   channel.onmessage = (event: MessageEvent<{ type: "CART_UPDATED"; cart: Cart }>) => {
+  //     if (event.data.type === "CART_UPDATED") {
+  //       setCart(event.data.cart);
+  //     }
+  //   };
+
+  //   return () => channel.close();
+  // }, []);
+
   useEffect(() => {
-    const channel = new BroadcastChannel(CART_SYNC_CHANNEL);
-    channelRef.current = channel;
+  if (!user) return; // nothing to stream if nobody's logged in
 
-    channel.onmessage = (event: MessageEvent<{ type: "CART_UPDATED"; cart: Cart }>) => {
-      if (event.data.type === "CART_UPDATED") {
-        setCart(event.data.cart);
-      }
-    };
+  // withCredentials: true is the EventSource equivalent of
+  // apiFetch's credentials: "include" - without it, the httpOnly auth
+  // cookie never gets sent to cart-service (different port = different
+  // origin), and requireAuth on /cart/stream would just reject it.
+  const eventSource = new EventSource(`${CART_API}/cart/stream`, { withCredentials: true });
 
-    return () => channel.close();
-  }, []);
+  eventSource.onmessage = (event) => {
+    const updatedCart: Cart = JSON.parse(event.data);
+    setCart(updatedCart);
+  };
+
+  eventSource.onerror = () => {
+    // The browser's EventSource actually auto-reconnects on its own
+    // after a drop - this is just for visibility while you're testing,
+    // not something that needs to manually restart the connection.
+    console.warn("Cart stream disconnected - browser will retry automatically");
+  };
+
+  // Closes the connection when the component unmounts OR when `user` changes (e.g. logout) - re-running this effect on the next login opens a fresh one, scoped to whoever's actually signed in now.
+  return () => eventSource.close();
+}, [user]);
 
   // The "send" half - call this any time THIS tab changes the cart, right after updating its own local state, so every sibling tab gets the same update pushed to it immediately.
   function broadcastCartUpdate(updatedCart: Cart) {
