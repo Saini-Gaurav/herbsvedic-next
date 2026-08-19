@@ -25,10 +25,7 @@ export default function LoginPage() {
       toast.success("Welcome back!");
       router.push("/");
     } catch (err) {
-      // ApiError carries the REAL message your backend sent
-      // ("Invalid email or password") - falling back to a generic
-      // message only if something unexpected (not even our own
-      // ApiError shape) went wrong, e.g. the network being down.
+      // ApiError carries the REAL message your backend sent ("Invalid email or password") - falling back to a generic message only if something unexpected (not even our own ApiError shape) went wrong, e.g. the network being down.
       const message = err instanceof ApiError ? err.message : "Something went wrong. Try again.";
       toast.error(message);
     }

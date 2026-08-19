@@ -25,7 +25,7 @@ const ANNOUNCEMENTS = [
 ];
 
 export default function Header() {
-  const { user, logout } = useAuth();
+  const { user, isLoading, logout } = useAuth();
   const { cart, openCart } = useCart();
   const pathname = usePathname();
   const router = useRouter();
@@ -243,7 +243,10 @@ export default function Header() {
               )}
             </button>
 
-            {user ? (
+            {isLoading ? (
+              // Don't show Login/Logout until we know the session state.
+              <div className="w-20 h-9 rounded-full bg-bark/10 animate-pulse" />
+            ) : user ? (
               <button
                 onClick={() => logout()}
                 className="border border-canopy text-canopy px-5 py-2 rounded-full text-sm font-body tracking-wide uppercase hover:bg-canopy hover:text-sand transition"
@@ -345,7 +348,9 @@ export default function Header() {
                   </Link>
                 </li>
                 <li>
-                  {user ? (
+                  {isLoading ? (
+                    <div className="w-16 h-7 rounded-full bg-bark/10 animate-pulse" />
+                  ) : user ? (
                     <button
                       onClick={() => {
                         logout();
