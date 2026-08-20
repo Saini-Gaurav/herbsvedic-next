@@ -1,6 +1,7 @@
 import { Product, Category, PaginationInfo, ProductListParams } from "@/types/product";
 
-const PRODUCT_API = process.env.NEXT_PUBLIC_PRODUCT_API_URL;
+// const PRODUCT_API = process.env.NEXT_PUBLIC_PRODUCT_API_URL;
+const PRODUCT_API = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getProducts(
   params: ProductListParams = {}

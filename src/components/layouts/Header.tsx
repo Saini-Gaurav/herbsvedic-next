@@ -8,7 +8,8 @@ import { FaHandPointRight } from "react-icons/fa";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 
-const PRODUCT_API = process.env.NEXT_PUBLIC_PRODUCT_API_URL;
+// const PRODUCT_API = process.env.NEXT_PUBLIC_PRODUCT_API_URL; 
+const PRODUCT_API = process.env.NEXT_PUBLIC_API_URL;
 
 interface SearchProduct {
   id: string;

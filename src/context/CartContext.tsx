@@ -4,7 +4,8 @@ import { createContext, useContext, useState, useEffect, ReactNode, useCallback,
 import { apiFetch } from "@/lib/apiClient";
 import { useAuth } from "./AuthContext";
 
-const CART_API = process.env.NEXT_PUBLIC_CART_API_URL;
+// const CART_API = process.env.NEXT_PUBLIC_CART_API_URL;
+const CART_API = process.env.NEXT_PUBLIC_API_URL;
 
 // One shared "radio station" name every tab tunes into. Any tab that creates a BroadcastChannel with this exact same name can hear every other tab's messages on it - this string is the only thing linking them.
 // const CART_SYNC_CHANNEL = "herbsvedic-cart-sync"; 

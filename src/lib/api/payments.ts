@@ -1,7 +1,8 @@
 import { apiFetch } from "@/lib/apiClient";
 import { InitiatePaymentResult, VerifyPaymentInput } from "@/types/payment";
 
-const PAYMENT_API = process.env.NEXT_PUBLIC_PAYMENT_API_URL;
+// const PAYMENT_API = process.env.NEXT_PUBLIC_PAYMENT_API_URL;
+const PAYMENT_API = process.env.NEXT_PUBLIC_API_URL;
 
 export function initiatePayment(orderId: string): Promise<{ payment: InitiatePaymentResult }> {
   return apiFetch<{ payment: InitiatePaymentResult }>(`${PAYMENT_API}/payments/initiate`, {

@@ -1,6 +1,7 @@
 // A thin wrapper around fetch that ALWAYS sends cookies, and always throws a real Error (with the backend's message) on a failed request, instead of quietly returning a "not ok" response that's easy to forget to check.
 
-const AUTH_API = process.env.NEXT_PUBLIC_AUTH_API_URL;
+// const AUTH_API = process.env.NEXT_PUBLIC_AUTH_API_URL;
+const AUTH_API = process.env.NEXT_PUBLIC_API_URL;
 
 export class ApiError extends Error {
   constructor(

@@ -3,7 +3,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { apiFetch, ApiError } from "@/lib/apiClient";
 
-const AUTH_API = process.env.NEXT_PUBLIC_AUTH_API_URL;
+// const AUTH_API = process.env.NEXT_PUBLIC_AUTH_API_URL;
+const AUTH_API = process.env.NEXT_PUBLIC_API_URL;
 
 interface User {
   userId: string;
