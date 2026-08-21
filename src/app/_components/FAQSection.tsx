@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
 
+const PREMIUM_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+
 const faqs = [
   {
     question: "Are your herbal products safe to use daily?",
@@ -52,9 +54,29 @@ export default function FAQSection() {
                   className={`shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
                 />
               </button>
-              {isOpen && (
-                <p className="px-5 pb-4 text-sm text-bark/70 font-body">{faq.answer}</p>
-              )}
+              <div
+                className="grid transition-[grid-template-rows]"
+                style={{
+                  gridTemplateRows: isOpen ? "1fr" : "0fr",
+                  transitionDuration: "350ms",
+                  transitionTimingFunction: PREMIUM_EASE,
+                }}
+              >
+                <div className="overflow-hidden">
+                  <p
+                    className={`px-5 pb-4 text-sm text-bark/70 font-body transition-opacity ${
+                      isOpen ? "opacity-100" : "opacity-0"
+                    }`}
+                    style={{
+                      transitionDuration: "250ms",
+                      transitionDelay: isOpen ? "100ms" : "0ms",
+                      transitionTimingFunction: PREMIUM_EASE,
+                    }}
+                  >
+                    {faq.answer}
+                  </p>
+                </div>
+              </div>
             </div>
           );
         })}
