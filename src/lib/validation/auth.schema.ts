@@ -21,4 +21,11 @@ export const registerSchema = z
     path: ["confirmPassword"], // tells react-hook-form which field's error box to show this under
   });
 
+
+export const otpSchema = z.object({
+  otp: z.string().length(6, "Enter the 6-digit code").regex(/^\d+$/, "Code must be numeric"),
+});
+
+export type OtpFormData = z.infer<typeof otpSchema>;  
+
 export type RegisterFormData = z.infer<typeof registerSchema>;

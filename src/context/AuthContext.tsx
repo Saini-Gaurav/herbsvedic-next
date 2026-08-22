@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { apiFetch, ApiError } from "@/lib/apiClient";
 
 // const AUTH_API = process.env.NEXT_PUBLIC_AUTH_API_URL;
@@ -18,7 +24,14 @@ interface AuthContextValue {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, phone: string) => Promise<void>;
+  // register: (name: string, email: string, password: string, phone: string) => Promise<void>;
+  initiateRegister: (
+    name: string,
+    email: string,
+    password: string,
+    phone: string,
+  ) => Promise<void>;
+  verifyRegisterOtp: (email: string, otp: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -55,10 +68,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.user);
   }
 
-  async function register(name: string, email: string, password: string, phone: string) {
-    await apiFetch(`${AUTH_API}/auth/register`, {
+  // async function register(name: string, email: string, password: string, phone: string) {
+  //   await apiFetch(`${AUTH_API}/auth/register`, {
+  //     method: "POST",
+  //     body: JSON.stringify({ name, email, password, phone }),
+  //   });
+  //   const data = await apiFetch<{ user: User }>(`${AUTH_API}/auth/me`);
+  //   setUser(data.user);
+  // }
+
+  // Step 1 - does NOT log anyone in, because no account exists yet. Just tells the backend to send an OTP. Nothing to setUser() here.
+  async function initiateRegister(
+    name: string,
+    email: string,
+    password: string,
+    phone: string,
+  ) {
+    await apiFetch(`${AUTH_API}/auth/register/initiate`, {
       method: "POST",
       body: JSON.stringify({ name, email, password, phone }),
+    });
+  }
+
+  // Step 2 - THIS is where a real account and a real login actually happen, all at once, only after the correct code is confirmed.
+  async function verifyRegisterOtp(email: string, otp: string) {
+    await apiFetch(`${AUTH_API}/auth/register/verify-otp`, {
+      method: "POST",
+      body: JSON.stringify({ email, otp }),
     });
     const data = await apiFetch<{ user: User }>(`${AUTH_API}/auth/me`);
     setUser(data.user);
@@ -70,7 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, initiateRegister, verifyRegisterOtp, logout }}>
       {children}
     </AuthContext.Provider>
   );
