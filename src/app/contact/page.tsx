@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import { FiMail, FiPhone, FiMapPin, FiClock } from "react-icons/fi";
 import { contactSchema, ContactFormData } from "@/lib/validation/contact.schema";
 import RootDivider from "@/components/ui/RootDivider";
+import { ApiError } from "@/lib/apiClient";
+import { submitContactForm } from "@/lib/api/notification.api";
 
 const CONTACT_DETAILS = [
   { icon: FiMail, label: "Email", value: "support@herbsvedicwellness.com" },
@@ -22,11 +24,15 @@ export default function ContactPage() {
     formState: { errors, isSubmitting },
   } = useForm<ContactFormData>({ resolver: zodResolver(contactSchema) });
 
-  async function onSubmit(data: ContactFormData) {
-    // NOTE: no notification-service exists in this backend yet - there is genuinely nowhere for this to go right now. Simulating a short delay so the loading state is visible in the UI, but being upfront in the toast rather than pretending a message was sent and silently dropping it. Wire this up for real once a service exists to receive it.
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    toast.info("Contact form isn't connected to a backend yet - coming soon!");
-    reset();
+    async function onSubmit(data: ContactFormData) {
+    try {
+      await submitContactForm(data);
+      toast.success("Message sent - we'll get back to you soon!");
+      reset();
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : "Something went wrong. Try again.";
+      toast.error(message);
+    }
   }
 
   return (

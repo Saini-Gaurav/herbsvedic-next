@@ -5,23 +5,33 @@ import Link from "next/link";
 import { FaInstagram, FaFacebookF, FaLinkedinIn, FaEnvelope, FaPhoneAlt } from "react-icons/fa";
 import { ClipLoader } from "react-spinners";
 import RootDivider from "@/components/ui/RootDivider";
+import { ApiError } from "@/lib/apiClient";
+import { subscribeToNewsletter } from "@/lib/api/notification.api";
+import { toast } from "react-toastify"; 
 
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address.");
+      toast.error("Please enter a valid email address.");
       return;
     }
+
     setLoading(true);
-    setTimeout(() => {
-      alert("Newsletter signup isn't connected yet - coming soon!");
+    try {
+      await subscribeToNewsletter(email);
+      toast.success("You're subscribed! Check your inbox.");
+      setEmail("");
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : "Something went wrong. Try again.";
+      toast.error(message);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   }
 
   return (
