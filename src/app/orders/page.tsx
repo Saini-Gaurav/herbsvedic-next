@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { getMyOrders } from "@/lib/api/order.api";
+import { getMyOrders } from "@/lib/api/orders";
 import { Order } from "@/types/order";
 import OrderStatusBadge from "@/components/ui/OrderStatusBadge";
 import RootDivider from "@/components/ui/RootDivider";
