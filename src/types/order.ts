@@ -1,3 +1,5 @@
+export type OrderStatus = "PENDING" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+
 export interface OrderItem {
   productId: string;
   productName: string;
@@ -29,4 +31,11 @@ export interface CreateOrderInput {
   country: string;
   phone: string;
   items: { productId: string; quantity: number }[];
+}
+
+export interface OrderPagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }

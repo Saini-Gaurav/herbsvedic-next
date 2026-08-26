@@ -248,12 +248,17 @@ export default function Header() {
               // Don't show Login/Logout until we know the session state.
               <div className="w-20 h-9 rounded-full bg-bark/10 animate-pulse" />
             ) : user ? (
-              <button
-                onClick={() => logout()}
-                className="border border-canopy text-canopy px-5 py-2 rounded-full text-sm font-body tracking-wide uppercase hover:bg-canopy hover:text-sand transition"
-              >
-                Logout
-              </button>
+              <div className="flex items-center gap-3">
+    <Link href="/orders" className="font-body text-sm text-bark/70 hover:text-canopy transition">
+      My Orders
+    </Link>
+    <button
+      onClick={() => logout()}
+      className="border border-canopy text-canopy px-5 py-2 rounded-full text-sm font-body tracking-wide uppercase hover:bg-canopy hover:text-sand transition"
+    >
+      Logout
+    </button>
+  </div>
             ) : (
               <Link
                 href="/login"
@@ -352,15 +357,20 @@ export default function Header() {
                   {isLoading ? (
                     <div className="w-16 h-7 rounded-full bg-bark/10 animate-pulse" />
                   ) : user ? (
-                    <button
-                      onClick={() => {
-                        logout();
-                        setIsMenuOpen(false);
-                      }}
-                      className="border border-canopy text-canopy px-4 py-1.5 rounded-full text-xs uppercase tracking-wide"
-                    >
-                      Logout
-                    </button>
+                    <div className="flex flex-col gap-3">
+    <Link href="/orders" onClick={() => setIsMenuOpen(false)} className="text-bark">
+      My Orders
+    </Link>
+    <button
+      onClick={() => {
+        logout();
+        setIsMenuOpen(false);
+      }}
+      className="border border-canopy text-canopy px-4 py-1.5 rounded-full text-xs uppercase tracking-wide self-start"
+    >
+      Logout
+    </button>
+  </div>
                   ) : (
                     <Link
                       href="/login"
