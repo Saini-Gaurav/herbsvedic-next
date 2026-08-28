@@ -3,12 +3,18 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { FiMenu, FiX, FiSearch, FiShoppingCart } from "react-icons/fi";
+import {
+  FiMenu,
+  FiX,
+  FiSearch,
+  FiShoppingCart,
+  FiPackage,
+} from "react-icons/fi";
 import { FaHandPointRight } from "react-icons/fa";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 
-// const PRODUCT_API = process.env.NEXT_PUBLIC_PRODUCT_API_URL; 
+// const PRODUCT_API = process.env.NEXT_PUBLIC_PRODUCT_API_URL;
 const PRODUCT_API = process.env.NEXT_PUBLIC_API_URL;
 
 interface SearchProduct {
@@ -249,16 +255,20 @@ export default function Header() {
               <div className="w-20 h-9 rounded-full bg-bark/10 animate-pulse" />
             ) : user ? (
               <div className="flex items-center gap-3">
-    <Link href="/orders" className="font-body text-sm text-bark/70 hover:text-canopy transition">
-      My Orders
-    </Link>
-    <button
-      onClick={() => logout()}
-      className="border border-canopy text-canopy px-5 py-2 rounded-full text-sm font-body tracking-wide uppercase hover:bg-canopy hover:text-sand transition"
-    >
-      Logout
-    </button>
-  </div>
+                <Link
+                  href="/orders"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-body text-bark/70 hover:bg-canopy/10 hover:text-canopy transition"
+                >
+                  <FiPackage size={16} />
+                  My Orders
+                </Link>
+                <button
+                  onClick={() => logout()}
+                  className="border border-canopy text-canopy px-5 py-2 rounded-full text-sm font-body tracking-wide uppercase hover:bg-canopy hover:text-sand transition"
+                >
+                  Logout
+                </button>
+              </div>
             ) : (
               <Link
                 href="/login"
@@ -358,19 +368,24 @@ export default function Header() {
                     <div className="w-16 h-7 rounded-full bg-bark/10 animate-pulse" />
                   ) : user ? (
                     <div className="flex flex-col gap-3">
-    <Link href="/orders" onClick={() => setIsMenuOpen(false)} className="text-bark">
-      My Orders
-    </Link>
-    <button
-      onClick={() => {
-        logout();
-        setIsMenuOpen(false);
-      }}
-      className="border border-canopy text-canopy px-4 py-1.5 rounded-full text-xs uppercase tracking-wide self-start"
-    >
-      Logout
-    </button>
-  </div>
+                      <Link
+                        href="/orders"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="flex items-center gap-2 text-bark hover:text-canopy transition"
+                      >
+                        <FiPackage size={16} />
+                        My Orders
+                      </Link>
+                      <button
+                        onClick={() => {
+                          logout();
+                          setIsMenuOpen(false);
+                        }}
+                        className="border border-canopy text-canopy px-4 py-1.5 rounded-full text-xs uppercase tracking-wide self-start"
+                      >
+                        Logout
+                      </button>
+                    </div>
                   ) : (
                     <Link
                       href="/login"
