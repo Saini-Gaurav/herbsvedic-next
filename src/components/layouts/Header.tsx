@@ -257,10 +257,13 @@ export default function Header() {
               <div className="flex items-center gap-3">
                 <Link
                   href="/orders"
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-body text-bark/70 hover:bg-canopy/10 hover:text-canopy transition"
+                  aria-label="My Orders"
+                  className="group flex items-center h-10 pl-2.5 pr-2.5 hover:pr-4 focus-visible:pr-4 rounded-full text-bark/70 hover:bg-canopy/10 hover:text-canopy focus-visible:bg-canopy/10 focus-visible:text-canopy transition-[padding,background-color,color] duration-300 ease-out outline-none"
                 >
-                  <FiPackage size={16} />
-                  My Orders
+                  <FiPackage size={18} className="shrink-0" />
+                  <span className="max-w-0 opacity-0 group-hover:max-w-20 group-hover:opacity-100 group-focus-visible:max-w-20 group-focus-visible:opacity-100 overflow-hidden whitespace-nowrap transition-all duration-300 ease-out">
+                    <span className="pl-1.5 text-sm font-body">My Orders</span>
+                  </span>
                 </Link>
                 <button
                   onClick={() => logout()}
