@@ -33,6 +33,8 @@ interface AuthContextValue {
   ) => Promise<void>;
   verifyRegisterOtp: (email: string, otp: string) => Promise<void>;
   logout: () => Promise<void>;
+  initiatePasswordReset: (email: string) => Promise<void>;
+  resetPassword: (email: string, otp: string, newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -105,8 +107,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }
 
+  async function initiatePasswordReset(email: string) {
+  await apiFetch(`${AUTH_API}/auth/forgot-password/initiate`, {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
+async function resetPassword(email: string, otp: string, newPassword: string) {
+  await apiFetch(`${AUTH_API}/auth/forgot-password/reset`, {
+    method: "POST",
+    body: JSON.stringify({ email, otp, newPassword }),
+  });
+  // Deliberately no setUser() here - see design note on no auto-login.
+}
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, initiateRegister, verifyRegisterOtp, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, initiateRegister, verifyRegisterOtp, logout, initiatePasswordReset,  resetPassword}}>
       {children}
     </AuthContext.Provider>
   );
@@ -120,3 +137,5 @@ export function useAuth(): AuthContextValue {
   }
   return context;
 }
+
+

@@ -16,6 +16,7 @@ import {
 import RootDivider from "@/components/ui/RootDivider";
 import OtpInput from "@/components/ui/OtpInput";
 import PasswordInput from "@/components/ui/PasswordInput";
+import Link from "next/link";
 
 // How many seconds someone must wait before requesting another code.Matches the backend's RESEND_COOLDOWN_MS (60s) - this is purely a UI countdown, the backend enforces the REAL rule independently; this timer just stops someone from clicking "Resend" and hitting a 429 they could see coming.
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -208,6 +209,11 @@ export default function LoginPage() {
                   </p>
                 )}
               </div>
+              <div className="text-right -mt-2">
+  <Link href="/forgot-password" className="font-body text-xs text-canopy hover:text-ink transition">
+    Forgot password?
+  </Link>
+</div>
 
               <button
                 type="submit"

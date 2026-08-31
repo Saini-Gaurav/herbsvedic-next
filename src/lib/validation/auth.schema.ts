@@ -26,6 +26,24 @@ export const otpSchema = z.object({
   otp: z.string().length(6, "Enter the 6-digit code").regex(/^\d+$/, "Code must be numeric"),
 });
 
+export const forgotPasswordEmailSchema = z.object({
+  email: z.string().email("Enter a valid email address"),
+});
+
+export type ForgotPasswordEmailData = z.infer<typeof forgotPasswordEmailSchema>;
+
+export const resetPasswordSchema = z
+  .object({
+    newPassword: z.string().min(6, "Password must be at least 6 characters"),
+    confirmNewPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "Passwords don't match",
+    path: ["confirmNewPassword"],
+  });
+
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+
 export type OtpFormData = z.infer<typeof otpSchema>;  
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
