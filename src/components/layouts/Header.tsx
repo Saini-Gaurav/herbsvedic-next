@@ -250,6 +250,15 @@ export default function Header() {
               )}
             </button>
 
+            {user?.roleCode === "ADMIN" && (
+              <Link
+                href="/admin/products"
+                className="font-body text-sm text-bark/70 hover:text-canopy transition"
+              >
+                Admin
+              </Link>
+            )}
+
             {isLoading ? (
               // Don't show Login/Logout until we know the session state.
               <div className="w-20 h-9 rounded-full bg-bark/10 animate-pulse" />
