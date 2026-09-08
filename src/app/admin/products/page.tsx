@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getProducts } from "@/lib/api/products";
 import { getCategories } from "@/lib/api/products";
 import { Product, Category } from "@/types/product";
+import { FiImage } from "react-icons/fi";
 import Link from "next/link"; 
 
 export default function AdminProductsPage() {
@@ -91,11 +92,17 @@ export default function AdminProductsPage() {
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-10 h-10 rounded-lg object-cover bg-canopy/10 shrink-0"
-                        />
+                        {product.image ? (
+  <img
+    src={product.image}
+    alt={product.name}
+    className="w-10 h-10 rounded-lg object-cover bg-canopy/10 shrink-0"
+  />
+) : (
+  <div className="w-10 h-10 rounded-lg bg-canopy/10 flex items-center justify-center shrink-0">
+    <FiImage size={16} className="text-canopy/40" />
+  </div>
+)}
                         <span className="font-body text-sm text-bark line-clamp-1">
                           {product.name}
                         </span>
