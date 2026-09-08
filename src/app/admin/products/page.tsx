@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getProducts } from "@/lib/api/products";
 import { getCategories } from "@/lib/api/products";
 import { Product, Category } from "@/types/product";
+import Link from "next/link"; 
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -43,30 +44,51 @@ export default function AdminProductsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display text-2xl text-bark">Products</h1>
-        {/* Edit/Delete/Add-new all come in later steps, one at a time -
-            deliberately not adding buttons here that don't do anything yet. */}
+        <Link
+          href="/admin/products/new"
+          className="px-5 py-2 bg-canopy text-sand font-body text-sm tracking-wide uppercase rounded-full hover:bg-ink transition"
+        >
+          Add Product
+        </Link>
       </div>
 
       {isLoading ? (
-        <p className="font-body text-sm text-bark/50 py-8">Loading products...</p>
+        <p className="font-body text-sm text-bark/50 py-8">
+          Loading products...
+        </p>
       ) : products.length === 0 ? (
-        <p className="font-body text-sm text-bark/50 py-8">No products found.</p>
+        <p className="font-body text-sm text-bark/50 py-8">
+          No products found.
+        </p>
       ) : (
         <>
           <div className="overflow-x-auto bg-white/60 border border-bark/10 rounded-2xl">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-bark/10">
-                  <th className="px-4 py-3 font-body text-xs uppercase tracking-wide text-bark/40">Product</th>
-                  <th className="px-4 py-3 font-body text-xs uppercase tracking-wide text-bark/40">Category</th>
-                  <th className="px-4 py-3 font-body text-xs uppercase tracking-wide text-bark/40">Price</th>
-                  <th className="px-4 py-3 font-body text-xs uppercase tracking-wide text-bark/40">Stock</th>
-                  <th className="px-4 py-3 font-body text-xs uppercase tracking-wide text-bark/40">Featured</th>
+                  <th className="px-4 py-3 font-body text-xs uppercase tracking-wide text-bark/40">
+                    Product
+                  </th>
+                  <th className="px-4 py-3 font-body text-xs uppercase tracking-wide text-bark/40">
+                    Category
+                  </th>
+                  <th className="px-4 py-3 font-body text-xs uppercase tracking-wide text-bark/40">
+                    Price
+                  </th>
+                  <th className="px-4 py-3 font-body text-xs uppercase tracking-wide text-bark/40">
+                    Stock
+                  </th>
+                  <th className="px-4 py-3 font-body text-xs uppercase tracking-wide text-bark/40">
+                    Featured
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {products.map((product) => (
-                  <tr key={product.id} className="border-b border-bark/5 last:border-0">
+                  <tr
+                    key={product.id}
+                    className="border-b border-bark/5 last:border-0"
+                  >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <img
@@ -74,15 +96,25 @@ export default function AdminProductsPage() {
                           alt={product.name}
                           className="w-10 h-10 rounded-lg object-cover bg-canopy/10 shrink-0"
                         />
-                        <span className="font-body text-sm text-bark line-clamp-1">{product.name}</span>
+                        <span className="font-body text-sm text-bark line-clamp-1">
+                          {product.name}
+                        </span>
                       </div>
                     </td>
                     <td className="px-4 py-3 font-body text-sm text-bark/70">
                       {categoryName(product.categoryId)}
                     </td>
-                    <td className="px-4 py-3 font-body text-sm text-bark">₹{product.price.toFixed(2)}</td>
+                    <td className="px-4 py-3 font-body text-sm text-bark">
+                      ₹{product.price.toFixed(2)}
+                    </td>
                     <td className="px-4 py-3 font-body text-sm">
-                      <span className={product.countInStock === 0 ? "text-red-700" : "text-bark/70"}>
+                      <span
+                        className={
+                          product.countInStock === 0
+                            ? "text-red-700"
+                            : "text-bark/70"
+                        }
+                      >
                         {product.countInStock}
                       </span>
                     </td>
