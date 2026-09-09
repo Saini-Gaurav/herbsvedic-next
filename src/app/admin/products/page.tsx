@@ -5,7 +5,7 @@ import { getProducts } from "@/lib/api/products";
 import { getCategories } from "@/lib/api/products";
 import { Product, Category } from "@/types/product";
 import { FiImage } from "react-icons/fi";
-import Link from "next/link"; 
+import Link from "next/link";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -82,6 +82,7 @@ export default function AdminProductsPage() {
                   <th className="px-4 py-3 font-body text-xs uppercase tracking-wide text-bark/40">
                     Featured
                   </th>
+                  <th className="px-4 py-3 font-body text-xs uppercase tracking-wide text-bark/40"></th>
                 </tr>
               </thead>
               <tbody>
@@ -93,16 +94,16 @@ export default function AdminProductsPage() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         {product.image ? (
-  <img
-    src={product.image}
-    alt={product.name}
-    className="w-10 h-10 rounded-lg object-cover bg-canopy/10 shrink-0"
-  />
-) : (
-  <div className="w-10 h-10 rounded-lg bg-canopy/10 flex items-center justify-center shrink-0">
-    <FiImage size={16} className="text-canopy/40" />
-  </div>
-)}
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="w-10 h-10 rounded-lg object-cover bg-canopy/10 shrink-0"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-canopy/10 flex items-center justify-center shrink-0">
+                            <FiImage size={16} className="text-canopy/40" />
+                          </div>
+                        )}
                         <span className="font-body text-sm text-bark line-clamp-1">
                           {product.name}
                         </span>
@@ -131,6 +132,14 @@ export default function AdminProductsPage() {
                           Featured
                         </span>
                       )}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <Link
+                        href={`/admin/products/${product.id}/edit`}
+                        className="font-body text-sm text-canopy hover:text-ink transition"
+                      >
+                        Edit
+                      </Link>
                     </td>
                   </tr>
                 ))}

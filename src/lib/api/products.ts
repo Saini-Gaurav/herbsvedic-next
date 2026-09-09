@@ -79,3 +79,15 @@ export async function createProduct(data: ProductFormData): Promise<Product> {
   });
   return result.product;
 }
+
+export async function updateProduct(id: string, data: ProductFormData): Promise<Product> {
+  const payload = {
+    ...data,
+    images: data.image ? [data.image] : [],
+  };
+  const result = await apiFetch<{ product: Product }>(`${PRODUCT_API}/products/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+  return result.product;
+}
