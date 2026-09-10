@@ -1,4 +1,6 @@
 import { ApiError } from "@/lib/apiClient";
+import { apiFetch } from "@/lib/apiClient";
+import { Subscriber, ContactMessage, NotificationPagination } from "@/types/notification";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -57,4 +59,25 @@ export async function submitContactForm(data: ContactFormPayload): Promise<void>
     const message = await parseErrorMessage(res, "Failed to send message");
     throw new ApiError(message, res.status);
   }
+}
+
+/**
+ * Unlike subscribeToNewsletter/submitContactForm above (plain fetch,
+ * public routes), these two need apiFetch - both require a logged-in
+ * ADMIN with a specific permission, so cookies + the 401-refresh
+ * handling genuinely matter here, same split as order.api.ts vs
+ * products.ts's public reads.
+ */
+export async function getSubscribers(
+  page: number = 1,
+  limit: number = 20
+): Promise<{ subscribers: Subscriber[]; page: number; limit: number; total: number; totalPages: number }> {
+  return apiFetch(`${API_URL}/newsletter/subscribers?page=${page}&limit=${limit}`);
+}
+
+export async function getContactMessages(
+  page: number = 1,
+  limit: number = 20
+): Promise<{ messages: ContactMessage[]; page: number; limit: number; total: number; totalPages: number }> {
+  return apiFetch(`${API_URL}/contact/messages?page=${page}&limit=${limit}`);
 }
