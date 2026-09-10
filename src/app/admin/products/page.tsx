@@ -6,6 +6,10 @@ import { getCategories } from "@/lib/api/products";
 import { Product, Category } from "@/types/product";
 import { FiImage } from "react-icons/fi";
 import Link from "next/link";
+import { toast } from "react-toastify";
+import { deleteProduct } from "@/lib/api/products";
+import { ApiError } from "@/lib/apiClient";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -13,6 +17,8 @@ export default function AdminProductsPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Categories fetched once, separately - just used to translate a raw categoryId into a readable name in the table, not re-fetched per page turn the way products are.
   useEffect(() => {
@@ -41,6 +47,27 @@ export default function AdminProductsPage() {
     return categories.find((c) => c.id === categoryId)?.name || "—";
   }
 
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      await deleteProduct(deleteTarget.id);
+      setProducts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+      toast.success(`"${deleteTarget.name}" deleted`);
+      setDeleteTarget(null);
+    } catch (err) {
+      // The backend rejects deleting a product referenced by an existing
+      // order/cart item at the database level in some designs, or may
+      // simply succeed regardless depending on how product-service was
+      // built - either way, show whatever real message comes back rather
+      // than assuming success or a generic failure.
+      const message =
+        err instanceof ApiError ? err.message : "Couldn't delete this product";
+      toast.error(message);
+    } finally {
+      setIsDeleting(false);
+    }
+  }
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -134,12 +161,20 @@ export default function AdminProductsPage() {
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <Link
-                        href={`/admin/products/${product.id}/edit`}
-                        className="font-body text-sm text-canopy hover:text-ink transition"
-                      >
-                        Edit
-                      </Link>
+                      <div className="flex items-center justify-end gap-4">
+                        <Link
+                          href={`/admin/products/${product.id}/edit`}
+                          className="font-body text-sm text-canopy hover:text-ink transition"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => setDeleteTarget(product)}
+                          className="font-body text-sm text-red-700/70 hover:text-red-700 transition"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -170,6 +205,14 @@ export default function AdminProductsPage() {
           )}
         </>
       )}
+      <ConfirmDialog
+        isOpen={deleteTarget !== null}
+        title="Delete this product?"
+        message={`"${deleteTarget?.name}" will be permanently removed. This can't be undone.`}
+        isConfirming={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }
