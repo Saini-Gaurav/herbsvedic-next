@@ -3,11 +3,12 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { FiBox, FiMail, FiMessageSquare } from "react-icons/fi";
+import { FiBox, FiMail, FiMessageSquare, FiPackage } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
 
 const ADMIN_NAV = [
   { href: "/admin/products", label: "Products", icon: FiBox },
+  { href: "/admin/orders", label: "Orders", icon: FiPackage },
   { href: "/admin/subscribers", label: "Subscribers", icon: FiMail },
   { href: "/admin/messages", label: "Messages", icon: FiMessageSquare },
   // More sections (Categories, Orders, Users, Subscribers) get added here one at a time as each one is actually built - no point linking to a page that doesn't exist yet.

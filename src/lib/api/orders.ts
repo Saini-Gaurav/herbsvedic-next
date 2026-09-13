@@ -24,3 +24,21 @@ export async function getMyOrders(
   );
   return data;
 }
+
+export async function getAllOrders(
+  status?: string,
+  page: number = 1,
+  limit: number = 20
+): Promise<{ orders: Order[]; pagination: OrderPagination }> {
+  const query = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (status) query.set("status", status);
+  return apiFetch(`${ORDER_API}/orders?${query.toString()}`);
+}
+
+export async function updateOrderStatus(id: string, status: string): Promise<Order> {
+  const data = await apiFetch<{ order: Order }>(`${ORDER_API}/orders/${id}/status`, {
+    method: "PUT",
+    body: JSON.stringify({ status }),
+  });
+  return data.order;
+}
