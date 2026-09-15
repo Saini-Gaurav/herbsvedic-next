@@ -32,9 +32,20 @@ interface AuthContextValue {
     phone: string,
   ) => Promise<void>;
   verifyRegisterOtp: (email: string, otp: string) => Promise<void>;
+  createUserAsAdmin: (data: {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  roleCode: string;
+}) => Promise<void>;
   logout: () => Promise<void>;
   initiatePasswordReset: (email: string) => Promise<void>;
-  resetPassword: (email: string, otp: string, newPassword: string) => Promise<void>;
+  resetPassword: (
+    email: string,
+    otp: string,
+    newPassword: string,
+  ) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -102,28 +113,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.user);
   }
 
+  async function createUserAsAdmin(data: {
+    name: string;
+    email: string;
+    password: string;
+    phone: string;
+    roleCode: string;
+  }) {
+    await apiFetch(`${AUTH_API}/auth/admin/create-user`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
   async function logout() {
     await apiFetch(`${AUTH_API}/auth/logout`, { method: "POST" });
     setUser(null);
   }
 
   async function initiatePasswordReset(email: string) {
-  await apiFetch(`${AUTH_API}/auth/forgot-password/initiate`, {
-    method: "POST",
-    body: JSON.stringify({ email }),
-  });
-}
+    await apiFetch(`${AUTH_API}/auth/forgot-password/initiate`, {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  }
 
-async function resetPassword(email: string, otp: string, newPassword: string) {
-  await apiFetch(`${AUTH_API}/auth/forgot-password/reset`, {
-    method: "POST",
-    body: JSON.stringify({ email, otp, newPassword }),
-  });
-  // Deliberately no setUser() here - see design note on no auto-login.
-}
+  async function resetPassword(
+    email: string,
+    otp: string,
+    newPassword: string,
+  ) {
+    await apiFetch(`${AUTH_API}/auth/forgot-password/reset`, {
+      method: "POST",
+      body: JSON.stringify({ email, otp, newPassword }),
+    });
+    // Deliberately no setUser() here - see design note on no auto-login.
+  }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, initiateRegister, verifyRegisterOtp, logout, initiatePasswordReset,  resetPassword}}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        login,
+        initiateRegister,
+        verifyRegisterOtp,
+        logout,
+        initiatePasswordReset,
+        resetPassword,
+        createUserAsAdmin,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -137,5 +177,3 @@ export function useAuth(): AuthContextValue {
   }
   return context;
 }
-
-
