@@ -21,6 +21,7 @@ export default function CheckoutPage() {
   const [step, setStep] = useState<Step>("address");
   const [address, setAddress] = useState<ShippingAddressFormData | null>(null);
   const [order, setOrder] = useState<Order | null>(null);
+  const [idempotencyKey] = useState(() => crypto.randomUUID());
 
   // Guard 1: must be logged in - checkout calls order-service/payment- service, both requireAuth. Better to redirect BEFORE showing a form than to let someone fill it out and hit a 401 on submit.
   useEffect(() => {
@@ -67,6 +68,7 @@ export default function CheckoutPage() {
           address={address}
           cart={cart}
           onBack={() => setStep("address")}
+          idempotencyKey={idempotencyKey}
           onOrderCreated={(createdOrder) => {
             setOrder(createdOrder);
             setStep("payment");

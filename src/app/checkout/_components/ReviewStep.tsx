@@ -12,10 +12,12 @@ export default function ReviewStep({
   address,
   cart,
   onBack,
+  idempotencyKey,
   onOrderCreated,
 }: {
   address: ShippingAddressFormData;
   cart: Cart;
+  idempotencyKey: string;
   onBack: () => void;
   onOrderCreated: (order: Order) => void;
 }) {
@@ -24,17 +26,23 @@ export default function ReviewStep({
   async function handlePlaceOrder() {
     setIsPlacing(true);
     try {
-      const { order } = await createOrder({
-        ...address,
-        items: cart.items.map((item) => ({
-          productId: item.productId,
-          quantity: item.quantity,
-        })),
-      });
+      const { order } = await createOrder(
+        {
+          ...address,
+          items: cart.items.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+          })),
+        },
+        idempotencyKey,
+      );
       onOrderCreated(order);
     } catch (err) {
       // order-service re-validates stock/price itself before creating anything - if a product went out of stock or was deleted since you added it to your cart, THIS is where that gets caught, with the real reason surfaced via ApiError's message.
-      const message = err instanceof ApiError ? err.message : "Couldn't place your order - try again";
+      const message =
+        err instanceof ApiError
+          ? err.message
+          : "Couldn't place your order - try again";
       toast.error(message);
     } finally {
       setIsPlacing(false);
@@ -62,10 +70,15 @@ export default function ReviewStep({
       </div>
 
       <div>
-        <h2 className="font-body font-semibold text-bark mb-3">Order summary</h2>
+        <h2 className="font-body font-semibold text-bark mb-3">
+          Order summary
+        </h2>
         <div className="divide-y divide-bark/10">
           {cart.items.map((item) => (
-            <div key={item.productId} className="flex justify-between py-3 text-sm font-body">
+            <div
+              key={item.productId}
+              className="flex justify-between py-3 text-sm font-body"
+            >
               <span>
                 {item.product?.name ?? "Product"} × {item.quantity}
               </span>
