@@ -2,6 +2,14 @@ import { Product, Category, PaginationInfo, ProductListParams } from "@/types/pr
 import { apiFetch } from "@/lib/apiClient"; 
 import { ProductFormData } from "@/lib/validation/product.schema";
 
+export interface CloudinarySignature {
+  signature: string;
+  timestamp: number;
+  apiKey: string;
+  cloudName: string;
+  folder: string;
+}
+
 // const PRODUCT_API = process.env.NEXT_PUBLIC_PRODUCT_API_URL;
 const PRODUCT_API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -94,4 +102,38 @@ export async function updateProduct(id: string, data: ProductFormData): Promise<
 
 export async function deleteProduct(id: string): Promise<void> {
   await apiFetch(`${PRODUCT_API}/products/${id}`, { method: "DELETE" });
+}
+
+export async function getUploadSignature(): Promise<CloudinarySignature> {
+  return apiFetch(`${PRODUCT_API}/products/upload-signature`);
+}
+
+/**
+ * Uploads DIRECTLY to Cloudinary, not through our own backend - the
+ * image bytes never touch product-service at all, only the small
+ * signed permission slip did. This is a plain fetch, not apiFetch -
+ * Cloudinary's API has nothing to do with our own cookie/auth system,
+ * it only cares about the signature itself.
+ */
+export async function uploadProductImage(file: File): Promise<string> {
+  const sig = await getUploadSignature();
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("api_key", sig.apiKey);
+  formData.append("timestamp", String(sig.timestamp));
+  formData.append("signature", sig.signature);
+  formData.append("folder", sig.folder);
+
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error("Image upload failed");
+  }
+
+  const data = await response.json();
+  return data.secure_url;
 }

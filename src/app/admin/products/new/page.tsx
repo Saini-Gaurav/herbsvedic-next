@@ -6,18 +6,23 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import Link from "next/link"; 
-import { getCategories, createProduct } from "@/lib/api/products";
+import { getCategories, createProduct, uploadProductImage } from "@/lib/api/products";
 import { ProductFormInput, productFormSchema, ProductFormData } from "@/lib/validation/product.schema";
 import { Category } from "@/types/product";
 import { ApiError } from "@/lib/apiClient";
 
+
 export default function NewProductPage() {
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
 
   const {
   register,
   handleSubmit,
+  setValue,
+  watch,
   formState: { errors, isSubmitting },
 } = useForm<ProductFormInput, unknown, ProductFormData>({
   resolver: zodResolver(productFormSchema),
@@ -40,6 +45,23 @@ export default function NewProductPage() {
     }
   }
 
+  const imagePreview = watch("image");
+
+async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  setIsUploadingImage(true);
+  try {
+    const url = await uploadProductImage(file);
+    setValue("image", url, { shouldValidate: true });
+    toast.success("Image uploaded");
+  } catch (err) {
+    toast.error("Image upload failed - try again");
+  } finally {
+    setIsUploadingImage(false);
+  }
+}
   return (
     <div className="max-w-2xl">
       <div className="flex items-center gap-3 mb-6">
@@ -78,15 +100,21 @@ export default function NewProductPage() {
           />
         </div>
 
-        <div>
-          <label className="block text-xs font-body uppercase tracking-wide text-bark/60 mb-1">Image URL</label>
-          <input
-            {...register("image")}
-            placeholder="https://..."
-            className="w-full px-4 py-2.5 rounded-lg border border-bark/20 bg-transparent font-body text-sm focus:outline-none focus:border-canopy transition"
-          />
-          {errors.image && <p className="text-red-700 text-xs mt-1">{errors.image.message}</p>}
-        </div>
+<div>
+  <label className="block text-xs font-body uppercase tracking-wide text-bark/60 mb-1">Product Image</label>
+  <input
+    type="file"
+    accept="image/*"
+    onChange={handleImageUpload}
+    disabled={isUploadingImage}
+    className="w-full text-sm font-body text-bark/70 file:mr-4 file:px-4 file:py-2 file:rounded-full file:border-0 file:bg-canopy file:text-sand file:text-sm file:font-body file:cursor-pointer disabled:opacity-50"
+  />
+  {isUploadingImage && <p className="text-bark/50 text-xs mt-1">Uploading...</p>}
+  {imagePreview && (
+    <img src={imagePreview} alt="Preview" className="w-24 h-24 rounded-lg object-cover mt-3 bg-canopy/10" />
+  )}
+  {errors.image && <p className="text-red-700 text-xs mt-1">{errors.image.message}</p>}
+</div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
