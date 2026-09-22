@@ -5,6 +5,7 @@ export const productFormSchema = z.object({
   description: z.string().min(10, "Description should be at least 10 characters"),
   richDescription: z.string().optional(),
   image: z.string().url("Must be a valid image URL").optional().or(z.literal("")),
+  images: z.array(z.string()).optional(),
   brand: z.string().optional(),
   price: z.coerce.number().min(0, "Price cannot be negative"),
   categoryId: z.string().min(1, "Select a category"),

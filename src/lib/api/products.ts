@@ -79,7 +79,8 @@ export async function getProductById(id: string): Promise<Product | null> {
 export async function createProduct(data: ProductFormData): Promise<Product> {
   const payload = {
     ...data,
-    images: data.image ? [data.image] : [], // backend expects an array; form only collects one URL for now
+    // images: data.image ? [data.image] : [],  // backend expects an array; form only collects one URL for now
+    images: data.images ?? [],
   };
   const result = await apiFetch<{ product: Product }>(`${PRODUCT_API}/products`, {
     method: "POST",
@@ -91,7 +92,8 @@ export async function createProduct(data: ProductFormData): Promise<Product> {
 export async function updateProduct(id: string, data: ProductFormData): Promise<Product> {
   const payload = {
     ...data,
-    images: data.image ? [data.image] : [],
+    // images: data.image ? [data.image] : [], 
+    images: data.images ?? [],
   };
   const result = await apiFetch<{ product: Product }>(`${PRODUCT_API}/products/${id}`, {
     method: "PUT",
