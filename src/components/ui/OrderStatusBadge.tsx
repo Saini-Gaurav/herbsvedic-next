@@ -4,6 +4,7 @@ const STATUS_STYLES: Record<string, string> = {
   SHIPPED: "bg-leaf/20 text-canopy",
   DELIVERED: "bg-canopy text-sand",
   CANCELLED: "bg-red-100 text-red-700",
+  REFUNDED: "bg-bark/15 text-bark/70",
 };
 
 // Falls back to a neutral style for any status string that doesn't

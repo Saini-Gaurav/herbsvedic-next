@@ -19,3 +19,7 @@ export function verifyPayment(
     body: JSON.stringify(input),
   });
 }
+
+export async function refundPayment(orderId: string): Promise<{ payment: InitiatePaymentResult }> {
+  return apiFetch(`${PAYMENT_API}/payments/${orderId}/refund`, { method: "POST" });
+}
