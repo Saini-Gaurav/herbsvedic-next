@@ -8,6 +8,7 @@ import { Order } from "@/types/order";
 import OrderStatusBadge from "@/components/ui/OrderStatusBadge";
 import { ApiError } from "@/lib/apiClient";
 import { refundPayment } from "@/lib/api/payments";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 
 const STATUS_OPTIONS = [
   "PENDING",
@@ -24,6 +25,8 @@ export default function AdminOrdersPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [refundingId, setRefundingId] = useState<string | null>(null);
+  const [refundTarget, setRefundTarget] = useState<Order | null>(null);
+  const [isRefunding, setIsRefunding] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -53,26 +56,23 @@ export default function AdminOrdersPage() {
     }
   }
 
-  async function handleRefund(order: Order) {
-    if (
-      !confirm(
-        `Refund order #${order.id.slice(0, 8)}? This restores stock and cannot be undone.`,
-      )
-    ) {
-      return;
-    }
-    setRefundingId(order.id);
+  async function handleConfirmRefund() {
+    if (!refundTarget) return;
+    setIsRefunding(true);
     try {
-      await refundPayment(order.id);
+      await refundPayment(refundTarget.id);
       setOrders((prev) =>
-        prev.map((o) => (o.id === order.id ? { ...o, status: "REFUNDED" } : o)),
+        prev.map((o) =>
+          o.id === refundTarget.id ? { ...o, status: "REFUNDED" } : o,
+        ),
       );
       toast.success("Refund processed");
+      setRefundTarget(null);
     } catch (err) {
       const message = err instanceof ApiError ? err.message : "Refund failed";
       toast.error(message);
     } finally {
-      setRefundingId(null);
+      setIsRefunding(false);
     }
   }
 
@@ -168,13 +168,10 @@ export default function AdminOrdersPage() {
 
                         {order.status === "PROCESSING" && (
                           <button
-                            onClick={() => handleRefund(order)}
-                            disabled={refundingId === order.id}
-                            className="font-body text-xs text-red-700/70 hover:text-red-700 transition disabled:opacity-50"
+                            onClick={() => setRefundTarget(order)}
+                            className="font-body text-xs text-red-700/70 hover:text-red-700 transition"
                           >
-                            {refundingId === order.id
-                              ? "Refunding..."
-                              : "Refund"}
+                            Refund
                           </button>
                         )}
                       </div>
@@ -208,6 +205,15 @@ export default function AdminOrdersPage() {
           )}
         </>
       )}
+      <ConfirmDialog
+        isOpen={refundTarget !== null}
+        title="Refund this order?"
+        message={`Order #${refundTarget?.id.slice(0, 8)} will be refunded in full through Razorpay, and its stock will be restored. This can't be undone.`}
+        confirmLabel="Refund"
+        isConfirming={isRefunding}
+        onConfirm={handleConfirmRefund}
+        onCancel={() => setRefundTarget(null)}
+      />
     </div>
   );
 }
