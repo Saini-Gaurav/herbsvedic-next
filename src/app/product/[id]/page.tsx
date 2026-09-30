@@ -4,6 +4,7 @@ import { getProductById, getProducts } from "@/lib/api/products";
 import ProductCard from "@/components/products/ProductCard";
 import ProductGallery from "./_components/ProductGallery";
 import AddToCartPanel from "./_components/AddToCartPanel";
+import ReviewsSection from "./_components/ReviewsSection";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -101,7 +102,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
           )}
         </div>
       </div>
-
+  
+      <ReviewsSection productId={product.id} />
       {relatedFiltered.length > 0 && (
         <section className="mt-20">
           <h2 className="font-display text-2xl text-bark mb-6">You might also like</h2>
