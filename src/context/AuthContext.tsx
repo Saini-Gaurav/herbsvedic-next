@@ -8,6 +8,8 @@ import {
   ReactNode,
 } from "react";
 import { apiFetch, ApiError } from "@/lib/apiClient";
+import { requestNotificationPermission } from "@/lib/firebase";
+import { registerDeviceToken } from "@/lib/api/notifications"
 
 // const AUTH_API = process.env.NEXT_PUBLIC_AUTH_API_URL;
 const AUTH_API = process.env.NEXT_PUBLIC_API_URL;
@@ -79,6 +81,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // The login call itself doesn't need to return the user - we already know how to ask for it (/auth/me), so reuse that instead of duplicating "what does a logged-in user look like" in two places.
     const data = await apiFetch<{ user: User }>(`${AUTH_API}/auth/me`);
     setUser(data.user);
+    const token = await requestNotificationPermission();
+  if (token) {
+    registerDeviceToken(token).catch(() => {});
+  }
   }
 
   // async function register(name: string, email: string, password: string, phone: string) {
