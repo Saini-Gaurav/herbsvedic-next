@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from "firebase/app";
-import { getMessaging, getToken, isSupported } from "firebase/messaging";
+import { getMessaging, getToken, isSupported, onMessage } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -36,4 +36,33 @@ export async function requestNotificationPermission(): Promise<string | null> {
     console.error("Failed to get FCM token:", err);
     return null;
   }
+}
+
+// The scope getToken() registers firebase-messaging-sw.js under by default.
+const FCM_SW_SCOPE = "/firebase-cloud-messaging-push-scope";
+
+/**
+ * Firebase only auto-displays a notification when NO tab of this site is
+ * visible. While one is, the service worker hands the payload to the page
+ * instead - and without an onMessage() listener it's silently dropped.
+ * This shows it ourselves in that case. Resolves to an unsubscribe function.
+ */
+export async function listenForForegroundMessages(): Promise<() => void> {
+  if (!(await isSupported())) return () => {};
+
+  const messaging = getMessaging(app);
+  return onMessage(messaging, async (payload) => {
+    const { title, body } = payload.notification || {};
+    if (!title || Notification.permission !== "granted") return;
+
+    // Showing it through the service worker registration (rather than
+    // `new Notification()`) also works on Android Chrome, where the
+    // constructor throws.
+    const registration = await navigator.serviceWorker.getRegistration(FCM_SW_SCOPE);
+    if (registration) {
+      await registration.showNotification(title, { body, icon: "/favicon.ico", data: payload.data });
+    } else {
+      new Notification(title, { body, icon: "/favicon.ico" });
+    }
+  });
 }

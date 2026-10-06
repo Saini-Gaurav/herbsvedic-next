@@ -8,8 +8,11 @@ import {
   ReactNode,
 } from "react";
 import { apiFetch, ApiError } from "@/lib/apiClient";
-import { requestNotificationPermission } from "@/lib/firebase";
-import { registerDeviceToken } from "@/lib/api/notifications"
+import {
+  requestNotificationPermission,
+  listenForForegroundMessages,
+} from "@/lib/firebase";
+import { registerDeviceToken } from "@/lib/api/notifications";
 
 // const AUTH_API = process.env.NEXT_PUBLIC_AUTH_API_URL;
 const AUTH_API = process.env.NEXT_PUBLIC_API_URL;
@@ -35,12 +38,12 @@ interface AuthContextValue {
   ) => Promise<void>;
   verifyRegisterOtp: (email: string, otp: string) => Promise<void>;
   createUserAsAdmin: (data: {
-  name: string;
-  email: string;
-  password: string;
-  phone: string;
-  roleCode: string;
-}) => Promise<void>;
+    name: string;
+    email: string;
+    password: string;
+    phone: string;
+    roleCode: string;
+  }) => Promise<void>;
   logout: () => Promise<void>;
   initiatePasswordReset: (email: string) => Promise<void>;
   resetPassword: (
@@ -73,6 +76,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkSession();
   }, []);
 
+  useEffect(() => {
+    if (!user) return;
+
+    async function syncDeviceToken() {
+      // Only re-requests if permission was ALREADY granted previously -
+      // Notification.permission reads the browser's existing decision
+      // without prompting again. If it's "default" (never asked) or
+      // "denied", this deliberately does nothing here; asking a returning
+      // user out of nowhere, outside the login moment, would feel intrusive.
+      if (
+        typeof window !== "undefined" &&
+        Notification.permission === "granted"
+      ) {
+        const token = await requestNotificationPermission();
+        if (token) {
+          registerDeviceToken(token).catch(() => {});
+        }
+      }
+    }
+    syncDeviceToken();
+  }, [user]);
+
+  // Pushes only target logged-in users, so the foreground listener lives
+  // for exactly as long as someone is logged in. `cancelled` covers the
+  // effect being torn down before the async subscribe has resolved.
+  useEffect(() => {
+    if (!user) return;
+
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+    listenForForegroundMessages()
+      .then((unsub) => {
+        if (cancelled) unsub();
+        else unsubscribe = unsub;
+      })
+      .catch((err) => console.error("Failed to listen for FCM messages:", err));
+
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
+  }, [user]);
+
   async function login(email: string, password: string) {
     await apiFetch(`${AUTH_API}/auth/login`, {
       method: "POST",
@@ -82,9 +128,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const data = await apiFetch<{ user: User }>(`${AUTH_API}/auth/me`);
     setUser(data.user);
     const token = await requestNotificationPermission();
-  if (token) {
-    registerDeviceToken(token).catch(() => {});
-  }
+    if (token) {
+      registerDeviceToken(token).catch(() => {});
+    }
   }
 
   // async function register(name: string, email: string, password: string, phone: string) {
