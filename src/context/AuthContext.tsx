@@ -13,6 +13,8 @@ import {
   listenForForegroundMessages,
 } from "@/lib/firebase";
 import { registerDeviceToken } from "@/lib/api/notifications";
+import { toast } from "react-toastify";
+import PushNotificationToast from "@/components/ui/PushNotificationToast";
 
 // const AUTH_API = process.env.NEXT_PUBLIC_AUTH_API_URL;
 const AUTH_API = process.env.NEXT_PUBLIC_API_URL;
@@ -106,7 +108,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     let unsubscribe: (() => void) | undefined;
     let cancelled = false;
-    listenForForegroundMessages()
+    listenForForegroundMessages((payload) => {
+      toast.info(
+        <PushNotificationToast
+          title={payload.notification?.title ?? ""}
+          body={payload.notification?.body}
+        />,
+        { toastId: payload.messageId, autoClose: 6000 },
+      );
+    })
       .then((unsub) => {
         if (cancelled) unsub();
         else unsubscribe = unsub;
