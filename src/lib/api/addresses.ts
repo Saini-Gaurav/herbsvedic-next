@@ -21,3 +21,10 @@ export function setDefaultAddress(id: string): Promise<{ message: string }> {
 export function deleteAddress(id: string): Promise<{ message: string }> {
   return apiFetch(`${API_URL}/addresses/${id}`, { method: "DELETE" });
 }
+
+export function updateAddress(id: string, input: AddressInput): Promise<{ address: SavedAddress }> {
+  return apiFetch(`${API_URL}/addresses/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(input),
+  });
+}

@@ -53,6 +53,7 @@ interface AuthContextValue {
     otp: string,
     newPassword: string,
   ) => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -193,6 +194,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }
 
+  // The name lives inside the access token, so after a profile edit we
+  // swap it for a fresh one (refresh rebuilds it from the DB) and re-read /me
+  async function refreshUser() {
+    await apiFetch(`${AUTH_API}/auth/refresh`, { method: "POST" });
+    const data = await apiFetch<{ user: User }>(`${AUTH_API}/auth/me`);
+    setUser(data.user);
+  }
+
   async function initiatePasswordReset(email: string) {
     await apiFetch(`${AUTH_API}/auth/forgot-password/initiate`, {
       method: "POST",
@@ -224,6 +233,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         initiatePasswordReset,
         resetPassword,
         createUserAsAdmin,
+        refreshUser
       }}
     >
       {children}

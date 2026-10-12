@@ -9,6 +9,7 @@ import {
   FiSearch,
   FiShoppingCart,
   FiPackage,
+  FiUser,
 } from "react-icons/fi";
 import { FaHandPointRight } from "react-icons/fa";
 import { useAuth } from "@/context/AuthContext";
@@ -274,6 +275,16 @@ export default function Header() {
                     <span className="pl-1.5 text-sm font-body">My Orders</span>
                   </span>
                 </Link>
+                <Link
+                  href="/profile"
+                  aria-label="Profile"
+                  className="group flex items-center h-10 pl-2.5 pr-2.5 hover:pr-4 focus-visible:pr-4 rounded-full text-bark/70 hover:bg-canopy/10 hover:text-canopy focus-visible:bg-canopy/10 focus-visible:text-canopy transition-[padding,background-color,color] duration-300 ease-out outline-none"
+                >
+                  <FiUser size={18} className="shrink-0" />
+                  <span className="max-w-0 opacity-0 group-hover:max-w-16 group-hover:opacity-100 group-focus-visible:max-w-16 group-focus-visible:opacity-100 overflow-hidden whitespace-nowrap transition-all duration-300 ease-out">
+                    <span className="pl-1.5 text-sm font-body">Profile</span>
+                  </span>
+                </Link>
                 <button
                   onClick={() => logout()}
                   className="border border-canopy text-canopy px-5 py-2 rounded-full text-sm font-body tracking-wide uppercase hover:bg-canopy hover:text-sand transition"
@@ -387,6 +398,14 @@ export default function Header() {
                       >
                         <FiPackage size={16} />
                         My Orders
+                      </Link>
+                      <Link
+                        href="/profile"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="flex items-center gap-2 text-bark hover:text-canopy transition"
+                      >
+                        <FiUser size={16} />
+                        Profile
                       </Link>
                       <button
                         onClick={() => {
