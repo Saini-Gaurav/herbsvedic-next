@@ -14,6 +14,7 @@ import {
 import { FaHandPointRight } from "react-icons/fa";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import UserMenu from "./UserMenu";
 
 // const PRODUCT_API = process.env.NEXT_PUBLIC_PRODUCT_API_URL;
 const PRODUCT_API = process.env.NEXT_PUBLIC_API_URL;
@@ -251,16 +252,29 @@ export default function Header() {
               )}
             </button>
 
-            {user?.roleCode === "ADMIN" && (
+            {/* {user?.roleCode === "ADMIN" && (
               <Link
                 href="/admin/products"
                 className="font-body text-sm text-bark/70 hover:text-canopy transition"
               >
                 Admin
               </Link>
-            )}
+            )} */}
 
             {isLoading ? (
+              // Don't show Login or the menu until we know the session state.
+              <div className="w-20 h-9 rounded-full bg-bark/10 animate-pulse" />
+            ) : user ? (
+              <UserMenu />
+            ) : (
+              <Link
+                href="/login"
+                className="border border-canopy text-canopy px-5 py-2 rounded-full text-sm font-body tracking-wide uppercase hover:bg-canopy hover:text-sand transition"
+              >
+                Login
+              </Link>
+            )}
+            {/* {isLoading ? (
               // Don't show Login/Logout until we know the session state.
               <div className="w-20 h-9 rounded-full bg-bark/10 animate-pulse" />
             ) : user ? (
@@ -299,7 +313,7 @@ export default function Header() {
               >
                 Login
               </Link>
-            )}
+            )} */}
           </div>
 
           <div className="md:hidden flex items-center space-x-4">
