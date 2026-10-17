@@ -10,6 +10,8 @@ import {
   FiShoppingCart,
   FiPackage,
   FiUser,
+  FiMapPin,
+  FiShield,
 } from "react-icons/fi";
 import { FaHandPointRight } from "react-icons/fa";
 import { useAuth } from "@/context/AuthContext";
@@ -339,7 +341,7 @@ export default function Header() {
 
             <div
               ref={menuRef}
-              className={`absolute top-full right-0 mt-0 w-64 bg-sand shadow-xl rounded-bl-2xl z-50 p-5 border border-bark/10 transition-all duration-300 origin-top-right ${
+              className={`absolute top-full right-0 mt-0 w-64 max-h-[calc(100vh-7rem)] overflow-y-auto bg-sand shadow-xl rounded-bl-2xl z-50 p-5 border border-bark/10 transition-all duration-300 origin-top-right ${
                 isMenuOpen
                   ? "opacity-100 scale-100 pointer-events-auto"
                   : "opacity-0 scale-95 pointer-events-none"
@@ -418,9 +420,27 @@ export default function Header() {
                         onClick={() => setIsMenuOpen(false)}
                         className="flex items-center gap-2 text-bark hover:text-canopy transition"
                       >
-                        <FiUser size={16} />
+                                                <FiUser size={16} />
                         Profile
                       </Link>
+                      <Link
+                        href="/profile/addresses"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="flex items-center gap-2 text-bark hover:text-canopy transition"
+                      >
+                        <FiMapPin size={16} />
+                        Saved Addresses
+                      </Link>
+                      {user.roleCode === "ADMIN" && (
+                        <Link
+                          href="/admin/products"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center gap-2 text-bark hover:text-canopy transition"
+                        >
+                          <FiShield size={16} />
+                          Admin Panel
+                        </Link>
+                      )}
                       <button
                         onClick={() => {
                           logout();
