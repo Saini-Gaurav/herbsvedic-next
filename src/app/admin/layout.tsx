@@ -3,19 +3,32 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { FiBox, FiMail, FiMessageSquare, FiPackage, FiUserPlus} from "react-icons/fi";
+import {
+  FiBox,
+  FiGrid,
+  FiMail,
+  FiMessageSquare,
+  FiPackage,
+  FiTag,
+  FiUserPlus,
+} from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
 
 const ADMIN_NAV = [
+  { href: "/admin", label: "Dashboard", icon: FiGrid, exact: true },
   { href: "/admin/products", label: "Products", icon: FiBox },
+  { href: "/admin/categories", label: "Categories", icon: FiTag },
   { href: "/admin/orders", label: "Orders", icon: FiPackage },
   { href: "/admin/subscribers", label: "Subscribers", icon: FiMail },
   { href: "/admin/messages", label: "Messages", icon: FiMessageSquare },
   { href: "/admin/users/new", label: "Add User", icon: FiUserPlus },
-  // More sections (Categories, Orders, Users, Subscribers) get added here one at a time as each one is actually built - no point linking to a page that doesn't exist yet.
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { user, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -38,14 +51,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           Admin
         </p>
         <nav className="flex md:flex-col gap-1">
-          {ADMIN_NAV.map(({ href, label, icon: Icon }) => {
-            const isActive = pathname.startsWith(href);
+          {ADMIN_NAV.map(({ href, label, icon: Icon, exact }) => {
+            const isActive = exact
+              ? pathname === href
+              : pathname.startsWith(href);
             return (
               <Link
                 key={href}
                 href={href}
                 className={`flex items-center gap-2.5 px-3 py-2 rounded-lg font-body text-sm transition ${
-                  isActive ? "bg-canopy text-sand" : "text-bark/70 hover:bg-canopy/10 hover:text-canopy"
+                  isActive
+                    ? "bg-canopy text-sand"
+                    : "text-bark/70 hover:bg-canopy/10 hover:text-canopy"
                 }`}
               >
                 <Icon size={16} />
