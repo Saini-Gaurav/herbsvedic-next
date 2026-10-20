@@ -81,10 +81,7 @@ export default function NewProductPage() {
 
     setIsUploadingGallery(true);
     try {
-      // Uploaded one at a time, sequentially - Cloudinary's signed-upload
-      // flow issues one signature per request, so this is simpler and
-      // safer than trying to fire all uploads in parallel and reconcile
-      // partial failures.
+      // Uploaded one at a time, sequentially - Cloudinary's signed-upload flow issues one signature per request, so this is simpler and safer than trying to fire all uploads in parallel and reconcile partial failures.
       const uploadedUrls: string[] = [];
       for (const file of Array.from(files)) {
         const url = await uploadProductImage(file);

@@ -44,12 +44,8 @@ export default function EditProductPage() {
       .catch(() => toast.error("Couldn't load categories"));
   }, []);
 
-  // Product data arrives ASYNCHRONOUSLY, well after useForm() has
-  // already initialized with no default values. reset() is the
-  // correct way to fill an already-created form with real data once
-  // it shows up - calling useForm again, or trying to pass
-  // defaultValues before the fetch resolves, wouldn't work here since
-  // the data simply doesn't exist yet at the moment the form is built.
+  // Product data arrives ASYNCHRONOUSLY, well after useForm() has already initialized with no default values. reset() is the correct way to fill an already-created form with real data once it shows up - calling useForm again, or trying to pass defaultValues before the fetch resolves, wouldn't work here since the data simply doesn't exist yet at the moment the form is built.
+  
   useEffect(() => {
     async function loadProduct() {
       try {
