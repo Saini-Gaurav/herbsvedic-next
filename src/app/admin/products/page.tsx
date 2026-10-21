@@ -56,11 +56,7 @@ export default function AdminProductsPage() {
       toast.success(`"${deleteTarget.name}" deleted`);
       setDeleteTarget(null);
     } catch (err) {
-      // The backend rejects deleting a product referenced by an existing
-      // order/cart item at the database level in some designs, or may
-      // simply succeed regardless depending on how product-service was
-      // built - either way, show whatever real message comes back rather
-      // than assuming success or a generic failure.
+      // The backend rejects deleting a product referenced by an existing order/cart item at the database level in some designs, or may simply succeed regardless depending on how product-service was built - either way, show whatever real message comes back rather than assuming success or a generic failure.
       const message =
         err instanceof ApiError ? err.message : "Couldn't delete this product";
       toast.error(message);
