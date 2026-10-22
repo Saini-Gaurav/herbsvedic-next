@@ -82,8 +82,7 @@ export default function AddressStep({
 
   useEffect(() => {
     loadSaved().then((addresses) => {
-      // Pre-pick the default on first arrival. If defaultValues came in,
-      // the shopper is returning from the review step - keep what they typed.
+      // Pre-pick the default on first arrival. If defaultValues came in, the shopper is returning from the review step - keep what they typed.
       if (!defaultValues && addresses.length > 0) {
         selectAddress(addresses[0]); // backend sends the default first
       }

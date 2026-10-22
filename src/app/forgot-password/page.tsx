@@ -42,9 +42,7 @@ export default function ForgotPasswordPage() {
     try {
       await initiatePasswordReset(data.email);
       pendingEmail.current = data.email;
-      // Same neutral messaging as the backend - never confirms or
-      // denies an account exists, matching the enumeration-protection
-      // decision baked into the API itself.
+      // Same neutral messaging as the backend - never confirms or denies an account exists, matching the enumeration-protection decision baked into the API itself.
       toast.success("If an account exists for this email, a code has been sent");
       setStep("reset");
       setCooldown(RESEND_COOLDOWN_SECONDS);
