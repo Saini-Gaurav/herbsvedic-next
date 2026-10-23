@@ -253,16 +253,6 @@ export default function Header() {
                 </span>
               )}
             </button>
-
-            {/* {user?.roleCode === "ADMIN" && (
-              <Link
-                href="/admin/products"
-                className="font-body text-sm text-bark/70 hover:text-canopy transition"
-              >
-                Admin
-              </Link>
-            )} */}
-
             {isLoading ? (
               // Don't show Login or the menu until we know the session state.
               <div className="w-20 h-9 rounded-full bg-bark/10 animate-pulse" />
@@ -276,46 +266,6 @@ export default function Header() {
                 Login
               </Link>
             )}
-            {/* {isLoading ? (
-              // Don't show Login/Logout until we know the session state.
-              <div className="w-20 h-9 rounded-full bg-bark/10 animate-pulse" />
-            ) : user ? (
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/orders"
-                  aria-label="My Orders"
-                  className="group flex items-center h-10 pl-2.5 pr-2.5 hover:pr-4 focus-visible:pr-4 rounded-full text-bark/70 hover:bg-canopy/10 hover:text-canopy focus-visible:bg-canopy/10 focus-visible:text-canopy transition-[padding,background-color,color] duration-300 ease-out outline-none"
-                >
-                  <FiPackage size={18} className="shrink-0" />
-                  <span className="max-w-0 opacity-0 group-hover:max-w-20 group-hover:opacity-100 group-focus-visible:max-w-20 group-focus-visible:opacity-100 overflow-hidden whitespace-nowrap transition-all duration-300 ease-out">
-                    <span className="pl-1.5 text-sm font-body">My Orders</span>
-                  </span>
-                </Link>
-                <Link
-                  href="/profile"
-                  aria-label="Profile"
-                  className="group flex items-center h-10 pl-2.5 pr-2.5 hover:pr-4 focus-visible:pr-4 rounded-full text-bark/70 hover:bg-canopy/10 hover:text-canopy focus-visible:bg-canopy/10 focus-visible:text-canopy transition-[padding,background-color,color] duration-300 ease-out outline-none"
-                >
-                  <FiUser size={18} className="shrink-0" />
-                  <span className="max-w-0 opacity-0 group-hover:max-w-16 group-hover:opacity-100 group-focus-visible:max-w-16 group-focus-visible:opacity-100 overflow-hidden whitespace-nowrap transition-all duration-300 ease-out">
-                    <span className="pl-1.5 text-sm font-body">Profile</span>
-                  </span>
-                </Link>
-                <button
-                  onClick={() => logout()}
-                  className="border border-canopy text-canopy px-5 py-2 rounded-full text-sm font-body tracking-wide uppercase hover:bg-canopy hover:text-sand transition"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <Link
-                href="/login"
-                className="border border-canopy text-canopy px-5 py-2 rounded-full text-sm font-body tracking-wide uppercase hover:bg-canopy hover:text-sand transition"
-              >
-                Login
-              </Link>
-            )} */}
           </div>
 
           <div className="md:hidden flex items-center space-x-4">
@@ -420,7 +370,7 @@ export default function Header() {
                         onClick={() => setIsMenuOpen(false)}
                         className="flex items-center gap-2 text-bark hover:text-canopy transition"
                       >
-                                                <FiUser size={16} />
+                        <FiUser size={16} />
                         Profile
                       </Link>
                       <Link
