@@ -154,14 +154,6 @@ export default function Header() {
               >
                 <FiSearch size={20} />
               </button>
-
-              {/* The pill - anchored at the icon's own vertical center, grows
-      LEFTWARD from the icon since it's right-0 and its width animates
-      from 0 up to a cap. Staying in the same row as the nav links on
-      purpose, per your call - w-56 keeps it narrow enough that it
-      shouldn't reach "Contact Us" on most screen widths, but worth
-      checking your narrowest md: breakpoint and shrinking this further
-      if it still touches. */}
               <div
                 className={`absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-sand shadow-lg border border-bark/10 rounded-full flex items-center overflow-hidden transition-all duration-300 ease-out ${
                   isSearchOpen
